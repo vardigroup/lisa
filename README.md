@@ -14,13 +14,13 @@ Lisa requires a C++14-compliant compiler.  G++ 5.x or later should work.
 Third-party dependencies
 ----------------------------------
 
-* Spot (Available under the license GNU GPL v3 at https://spot.lrde.epita.fr/)
+* Spot (Available at https://spot.lrde.epita.fr/)
 
-* Syft (Available under the MIT license at https://github.com/liyong31/Syft)
+* Syft (Available at https://github.com/liyong31/Syft)
 
-* MONA (Available under the license GNU GPL v2 at https://www.brics.dk/mona/)
+* MONA (Available at https://github.com/liyong31/MONA)
 
-* CUDD (Available from https://github.com/ivmai/cudd)
+* CUDD (Available at https://github.com/KavrakiLab/cudd.git)
 
 Lisa relies on Spot and MONA to construct a DFA from a small LTLf formula.
 When constructing a DFA from an LTLf formula with MONA, Lisa requires Syft to
@@ -31,7 +31,8 @@ Complilation steps
 
 In the following we assume that we will compile Lisa on a Ubuntu system.
 
-==== 1) Install Spot ====
+1) Install Spot
+-----------------------------------
 
 Lisa needs Spot to convert an LTLf to a DFA and to perform intersection of DFAs with explicit state representation.
 
@@ -42,7 +43,8 @@ Lisa needs Spot to convert an LTLf to a DFA and to perform intersection of DFAs 
 
 3. Type ltl2tgba -f "F a" in command line, you expect to see some output starting with "HOA: v1".
 
-==== 2) Install CUDD ====
+2) Install CUDD
+-----------------------------------
 
 Syft needs CUDD to perform BDD operations and Lisa employs CUDD for symbolic DFA minimization.
 
@@ -60,20 +62,22 @@ Syft needs CUDD to perform BDD operations and Lisa employs CUDD for symbolic DFA
     c. Using a version of aclocal other than 1.14:
        modify the version 1.14 in configure file accordingly.
 
-==== 3) Install MONA ====
-
+3) Install MONA
+-----------------------------------
 Lisa needs MONA to convert a formula in first order logic to a DFA.
 
 1. Go to mona-1.4-17 directory and follow the install instructions in INSTALL.
     For instance ./configure && make && sudo make install-strip
 
 **NOTE**
+
 In BDD/bdd.h, the original table size is defined as #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000 (=2^24), which is too small for the DFA generation comparison.
 For a fair comparison with MONA, we modify it to #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000000 (=2^36), so to allow MONA have larger table size during DFA construction.
 Note that MONA has explicit state representation but encodes the labels on transition symbolically.
 For more details on the representation of DFA in MONA, we refer to https://www.brics.dk/mona/mona14.pdf.
     
-==== 4) Compile Syft ====
+4) Compile Syft
+-----------------------------------
 
 Lisa needs the ltlf2fol tool in Syft to rewrite an LTLf formula as a formula in first order logic.
 Please make sure that you have network connection during the installation of flex, bison and boost.
@@ -99,10 +103,12 @@ Please make sure that you have network connection during the installation of fle
 Then you should be able to find two executables ltlf2fol and Syft inside the folder Syft/build/bin.
 
 **NOTE**
+
 For a fair comparison with Syft, we have enabled dynamic variable ordering in Syft, as Lisa and Part tool also use this dynamic option.
 As mentioned in the submission, the improved version of Syft can exhibit as much as 75% reduction in runtime compared to Syft.
 
-==== 5) Compile Lisa ====
+5) Compile Lisa
+-----------------------------------
 
 1. Copy the executable file ltlf2fol to lisa folder.
 
@@ -114,7 +120,8 @@ As mentioned in the submission, the improved version of Syft can exhibit as much
 
     g++ lisa.cc minimize.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc  -o lisa -lspot -lbddx -lcudd -O3
 
-*** Command line usage ***
+Command line usage
+----------------------------------
 
 If you type ./lisa -h in command line, you should see the following command line usage:
 
@@ -181,38 +188,4 @@ Read a formula file and output the number of states (nodes) of the constructed D
     
     Note that in the experiments conducted for the submission, we always let environment move first in the DFA game.
     Still, Lisa outputs "UNREALIZABLE", as this specification is unrealizable.
-
-*** Execute the experiments ***
-
-Due to the space limit, we are unable to provide the raw data of the experiments as they amount to 1.7GB.
-We can provide them upon request via an anonymous link durin gauthor response period.
-
-For reviewers who wish to run the experiments on their own machine, we provide two shell scripts in benchmarks folder for running the experiments.
-We assume that all executables are available in their respective folders as follows:
-
-lisa      --- lisa/
-ltlffol   --- lisa/ and Syft/build/bin
-Syft      --- Syft/build/bin
-
-==== DFA generation ====
-
-In this experiment, we compare Lisa to Lisa-Explicit, Lisa-Symbolic and MONA-based method.
-
-1. Go to benchmarks directory.
-
-    type chmod +x ./run_dfa_conversion.sh && ./run_dfa_conversion.sh
-    
-    Currently the time limit is set to 3600 through a line of code time=3600 (1 hour).
-
-==== LTLf synthesis ====
-
-In this experiment, we compare LisaSynt to Syft+.
-
-1. Go to benchmarks directory.
-
-    type chmod +x ./run_synthesis.sh && ./run_synthesis.sh
-    
-    Currently the time limit is set to 28800 (8 hour).
-
-The log files for each benchmark set can be found in their respective folders in the log folder inside the benchmarks folder.
 
