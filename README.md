@@ -13,14 +13,14 @@ Lisa requires a C++14-compliant compiler.  G++ 5.x or later should work.
 
 Third-party dependencies
 ----------------------------------
-Due to the space limit, we do not include all the following dependencies in the zip file. 
 
--- Spot (Available under the license GNU GPL v3 at https://spot.lrde.epita.fr/)
--- Syft (Included in the zip file, available under the MIT license at https://github.com/saffiepig/Syft)
-    The attached version of Syft has been modified in order to output the number of nodes during synthesis step and allow dynamic variable ordering in Syft.
--- MONA (Included in the zip file, available under the license GNU GPL v2 at https://www.brics.dk/mona/)
-    The attached version of MONA has been modified to allow MONA have larger table size for a fair comparison with Lisa.
--- CUDD (Included in the zip file, currently available from https://github.com/ivmai/cudd)
+* Spot (Available under the license GNU GPL v3 at https://spot.lrde.epita.fr/)
+
+* Syft (Available under the MIT license at https://github.com/liyong31/Syft)
+
+* MONA (Available under the license GNU GPL v2 at https://www.brics.dk/mona/)
+
+* CUDD (Available from https://github.com/ivmai/cudd)
 
 Lisa relies on Spot and MONA to construct a DFA from a small LTLf formula.
 When constructing a DFA from an LTLf formula with MONA, Lisa requires Syft to
