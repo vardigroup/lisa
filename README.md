@@ -1,10 +1,9 @@
 Overview
------------------------------------
+=======
 
 Lisa is an LTLf synthesis tool publicly available under the license GNU GPL v3.
 
 Compilation instructions
-=======
 
 Requirements
 -----------------------------------
@@ -12,7 +11,7 @@ Requirements
 Lisa requires a C++14-compliant compiler.  G++ 5.x or later should work.
 
 Third-party dependencies
-=======
+-----------------------------------
 
 * [Spot model checker](https://spot.lrde.epita.fr/)
 
@@ -27,7 +26,7 @@ When constructing a DFA from an LTLf formula with MONA, Lisa requires Syft to
 translate an LTLf formula to a formula in first order logic, which is then fed into MONA.
 
 Complilation steps
-----------------------------------
+=======
 
 In the following we assume that we will compile Lisa on a Ubuntu system.
 
