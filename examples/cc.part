@@ -1,0 +1,2 @@
+.inputs initcounter0 inc
+.outputs counter0 carry0
