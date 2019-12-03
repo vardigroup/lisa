@@ -30,6 +30,7 @@ Complilation steps
 In the following we assume that we will compile Lisa on a Ubuntu system.
 
 1) Install Spot
+=========
 
 Lisa needs Spot to convert an LTLf to a DFA and to perform intersection of DFAs with explicit state representation.
 
@@ -41,7 +42,7 @@ Lisa needs Spot to convert an LTLf to a DFA and to perform intersection of DFAs 
 3. Type ltl2tgba -f "F a" in command line, you expect to see some output starting with "HOA: v1".
 
 2) Install CUDD
-
+=========
 
 Syft needs CUDD to perform BDD operations and Lisa employs CUDD for symbolic DFA minimization.
 
@@ -60,7 +61,7 @@ Syft needs CUDD to perform BDD operations and Lisa employs CUDD for symbolic DFA
        modify the version 1.14 in configure file accordingly.
 
 3) Install MONA
-
+=========
 
 Lisa needs MONA to convert a formula in first order logic to a DFA.
 
@@ -75,6 +76,7 @@ Note that MONA has explicit state representation but encodes the labels on trans
 For more details on the representation of DFA in MONA, we refer to https://www.brics.dk/mona/mona14.pdf.
     
 4) Compile Syft
+=========
 
 Lisa needs the ltlf2fol tool in Syft to rewrite an LTLf formula as a formula in first order logic.
 Please make sure that you have network connection during the installation of flex, bison and boost.
@@ -105,6 +107,7 @@ For a fair comparison with Syft, we have enabled dynamic variable ordering in Sy
 As mentioned in the submission, the improved version of Syft can exhibit as much as 75% reduction in runtime compared to Syft.
 
 5) Compile Lisa
+=========
 
 1. Copy the executable file ltlf2fol to lisa folder.
 
@@ -117,7 +120,7 @@ As mentioned in the submission, the improved version of Syft can exhibit as much
     g++ lisa.cc minimize.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc  -o lisa -lspot -lbddx -lcudd -O3
 
 Command line usage
-----------------------------------
+=======
 
 If you type ./lisa -h in command line, you should see the following command line usage:
 
