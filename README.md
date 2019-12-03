@@ -14,13 +14,13 @@ Lisa requires a C++14-compliant compiler.  G++ 5.x or later should work.
 Third-party dependencies
 =======
 
-* Spot (Available at https://spot.lrde.epita.fr/)
+* [Spot model checker](https://spot.lrde.epita.fr/)
 
-* Syft (Available at https://github.com/liyong31/Syft)
+* [Syft LTLf Synthesizer](https://github.com/liyong31/Syft)
 
-* MONA (Available at https://github.com/liyong31/MONA)
+* [MONA](https://github.com/liyong31/MONA)
 
-* CUDD (Available at https://github.com/KavrakiLab/cudd.git)
+* [CUDD library](https://github.com/KavrakiLab/cudd.git)
 
 Lisa relies on Spot and MONA to construct a DFA from a small LTLf formula.
 When constructing a DFA from an LTLf formula with MONA, Lisa requires Syft to
