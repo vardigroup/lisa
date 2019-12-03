@@ -30,7 +30,7 @@ Complilation steps
 In the following we assume that we will compile Lisa on a Ubuntu system.
 
 1) Install Spot
-=========
+-----------------------------------
 
 Lisa needs Spot to convert an LTLf to a DFA and to perform intersection of DFAs with explicit state representation.
 
@@ -42,7 +42,7 @@ Lisa needs Spot to convert an LTLf to a DFA and to perform intersection of DFAs 
 3. Type ltl2tgba -f "F a" in command line, you expect to see some output starting with "HOA: v1".
 
 2) Install CUDD
-=========
+-----------------------------------
 
 Syft needs CUDD to perform BDD operations and Lisa employs CUDD for symbolic DFA minimization.
 
@@ -61,7 +61,7 @@ Syft needs CUDD to perform BDD operations and Lisa employs CUDD for symbolic DFA
        modify the version 1.14 in configure file accordingly.
 
 3) Install MONA
-=========
+-----------------------------------
 
 Lisa needs MONA to convert a formula in first order logic to a DFA.
 
@@ -76,7 +76,7 @@ Note that MONA has explicit state representation but encodes the labels on trans
 For more details on the representation of DFA in MONA, we refer to https://www.brics.dk/mona/mona14.pdf.
     
 4) Compile Syft
-=========
+-----------------------------------
 
 Lisa needs the ltlf2fol tool in Syft to rewrite an LTLf formula as a formula in first order logic.
 Please make sure that you have network connection during the installation of flex, bison and boost.
@@ -107,7 +107,7 @@ For a fair comparison with Syft, we have enabled dynamic variable ordering in Sy
 As mentioned in the submission, the improved version of Syft can exhibit as much as 75% reduction in runtime compared to Syft.
 
 5) Compile Lisa
-=========
+-----------------------------------
 
 1. Copy the executable file ltlf2fol to lisa folder.
 
@@ -140,7 +140,7 @@ Read a formula file and output the number of states (nodes) of the constructed D
 
 1. To use the default setting to construct a DFA from an LTLf formula, type
     
-    ./lisa -ltlf ../examples/ltlf3377.ltlf
+    ./lisa -ltlf ./examples/ltlf3377.ltlf
     
     You are expected to see the output ending with "Number of states (or nodes) is: 78626".
     In the DFA generation, the symbolic representation of DFA has been triggered.
@@ -151,13 +151,13 @@ Read a formula file and output the number of states (nodes) of the constructed D
     if the product of the number of states in the two smallest minimal DFAs is more than t2.
     For example, the following command
     
-    ./lisa -ltlf ../examples/ltlf3377.ltlf -nia 0 -npa 0
+    ./lisa -ltlf ./examples/ltlf3377.ltlf -nia 0 -npa 0
     
     corresponds to pure compositional symbolic DFA generation. You are expected to see the output ending with "Number of states (or nodes) is: 40745".
     
 2. In order to know how many states in the minimal DFA of the last symbolic DFA, type
 
-    ./lisa -ltlf ../examples/ltlf3377.ltlf -lst
+    ./lisa -ltlf ./examples/ltlf3377.ltlf -lst
     
     to minimize the output symbolic DFA. The minimization of the DFA may take a while to terminate.
     You are expected to see the output ending with "Number of states in the minimal DFA is: 3376".
@@ -165,7 +165,7 @@ Read a formula file and output the number of states (nodes) of the constructed D
     
 3. In order to use only explicit state representation in DFA generation, type
     
-    ./lisa -ltlf ../examples/ltlf3377.ltlf -exp
+    ./lisa -ltlf ./examples/ltlf3377.ltlf -exp
     
     The DFA generation with explicit states always terminates and returns a minimal DFA corresponding to the input formula.
     You are expected to see the output ending with "Number of states (or nodes) is: 3377".
@@ -176,14 +176,14 @@ Read a formula file and output the number of states (nodes) of the constructed D
 
 4. To perform the synthesis step after DFA generation, type
     
-    ./lisa -ltlf ../examples/ltlf3377.ltlf -part ../examples/ltlf3377.part -syn
+    ./lisa -ltlf ./examples/ltlf3377.ltlf -part ./examples/ltlf3377.part -syn
     
     where the input and output variables in the LTLf formula are specified in the file ltlf3377.part.
     You are expected to see that Lisa outputs "UNREALIZABLE", as this specification is unrealizable.
 
 5. To let the environment move first in the DFA game for LTLf synthesis, type
 
-    ./lisa -ltlf ../examples/ltlf3377.ltlf -part ../examples/ltlf3377.part -syn -env
+    ./lisa -ltlf ./examples/ltlf3377.ltlf -part ./examples/ltlf3377.part -syn -env
     
     Note that in the experiments conducted for the submission, we always let environment move first in the DFA game.
     Still, Lisa outputs "UNREALIZABLE", as this specification is unrealizable.
