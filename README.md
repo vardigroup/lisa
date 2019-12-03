@@ -3,7 +3,6 @@ Overview
 
 Lisa is an LTLf synthesis tool publicly available under the license GNU GPL v3.
 
-Compilation instructions
 
 Requirements
 -----------------------------------
