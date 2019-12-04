@@ -20,6 +20,8 @@ Third-party dependencies
 
 * [CUDD library](https://github.com/KavrakiLab/cudd.git)
 
+* [Sylvan library](https://github.com/trolando/sylvan)
+
 Lisa relies on Spot and MONA to construct a DFA from a small LTLf formula.
 When constructing a DFA from an LTLf formula with MONA, Lisa requires Syft to
 translate an LTLf formula to a formula in first order logic, which is then fed into MONA.
@@ -29,95 +31,93 @@ Complilation steps
 
 In the following we assume that we will compile Lisa on a Ubuntu system.
 
-1) Install Spot
------------------------------------
+1. Install Spot
 
-Lisa needs Spot to convert an LTLf to a DFA and to perform intersection of DFAs with explicit state representation.
+    Lisa needs Spot to convert an LTLf to a DFA and to perform intersection of DFAs with explicit state representation.
 
-1. Get the latest version of Spot from https://spot.lrde.epita.fr/install.html.
+    * Get the latest version of Spot from https://spot.lrde.epita.fr/install.html.
 
-2. Uncompress Spot and follow install intructions in README to install Spot. Note that the compilation of Spot may take a while.
-   For instance ./configure && make && sudo make install
+    * Uncompress Spot and follow install intructions in README to install Spot. Note that the compilation of Spot may take a while.
+    For instance ./configure && make && sudo make install
 
-3. Type ltl2tgba -f "F a" in command line, you expect to see some output starting with "HOA: v1".
+    * Type ltl2tgba -f "F a" in command line, you expect to see some output starting with "HOA: v1".
 
-2) Install CUDD
------------------------------------
+2. Install CUDD
 
-Syft needs CUDD to perform BDD operations and Lisa employs CUDD for symbolic DFA minimization.
+    Syft needs CUDD to perform BDD operations and Lisa employs CUDD for symbolic DFA minimization.
 
-1. Uncompress cudd.zip or get CUDD from https://github.com/ivmai/cudd.
+    * Uncompress cudd.zip or get CUDD from https://github.com/ivmai/cudd.
 
-2. Install CUDD:
-    ./configure --enable-silent-rules --enable-obj --enable-dddmp --prefix=[install location]
-    sudo make install
+    * Install CUDD:
+        ./configure --enable-silent-rules --enable-obj --enable-dddmp --prefix=[install location]
+        sudo make install
 
-    If you encounter an error about aclocal, this might can be fixed as follows.
-    a. Not having automake:
-       sudo apt-get install automake
-    b. Needing to reconfigure, do this before configuring:
-       autoreconf -i
-    c. Using a version of aclocal other than 1.14:
-       modify the version 1.14 in configure file accordingly.
+        If you encounter an error about aclocal, this might can be fixed as follows.
+        * Not having automake:
+        
+            sudo apt-get install automake
+        * Needing to reconfigure, do this before configuring:
 
-3) Install MONA
------------------------------------
+            autoreconf -i
+        * Using a version of aclocal other than 1.14:
+            modify the version 1.14 in configure file accordingly.
 
-Lisa needs MONA to convert a formula in first order logic to a DFA.
+3. Install MONA
 
-1. Go to mona-1.4-17 directory and follow the install instructions in INSTALL.
-    For instance ./configure && make && sudo make install-strip
+    Lisa needs MONA to convert a formula in first order logic to a DFA.
 
-**NOTE**
-
-In BDD/bdd.h, the original table size is defined as #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000 (=2^24), which is too small for the DFA generation comparison.
-For a fair comparison with MONA, we modify it to #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000000 (=2^36), so to allow MONA have larger table size during DFA construction.
-Note that MONA has explicit state representation but encodes the labels on transition symbolically.
-For more details on the representation of DFA in MONA, we refer to https://www.brics.dk/mona/mona14.pdf.
+    * Go to mona-1.4-17 directory and follow the install instructions in INSTALL.
     
-4) Compile Syft
------------------------------------
+        For instance ./configure && make && sudo make install-strip
 
-Lisa needs the ltlf2fol tool in Syft to rewrite an LTLf formula as a formula in first order logic.
-Please make sure that you have network connection during the installation of flex, bison and boost.
+    **NOTE**
 
-1. Install flex and bison:
-    sudo apt-get install flex bison
+    In BDD/bdd.h, the original table size is defined as #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000 (=2^24), which is too small for the DFA generation comparison.
+    For a fair comparison with MONA, we modify it to #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000000 (=2^36), so to allow MONA have larger table size during DFA construction.
+    Note that MONA has explicit state representation but encodes the labels on transition symbolically.
+    For more details on the representation of DFA in MONA, we refer to https://www.brics.dk/mona/mona14.pdf.
+    
+4. Compile Syft
 
-2. Install BOOST:
-    sudo apt-get install libboost-dev
+    Lisa needs the ltlf2fol tool in Syft to rewrite an LTLf formula as a formula in first order logic.
+    Please make sure that you have network connection during the installation of flex, bison and boost.
 
-3. Go to Syft directory and make build folder under Syft folder:
+    * Install flex and bison:
+        sudo apt-get install flex bison
 
-   mkdir build && cd build
+    * Install BOOST:
+        sudo apt-get install libboost-dev
 
-2. Run CMake to generate the makefile:
+    * Go to Syft directory and make build folder under Syft folder:
 
-   cmake ..
+        mkdir build && cd build
 
-3. Compile using the generated makefile:
+    * Run CMake to generate the makefile:
 
-   make
+        cmake ..
+
+    * Compile using the generated makefile:
+
+        make
    
-Then you should be able to find two executables ltlf2fol and Syft inside the folder Syft/build/bin.
+    Then you should be able to find two executables ltlf2fol and Syft inside the folder Syft/build/bin.
 
-**NOTE**
+    **NOTE**
 
-For a fair comparison with Syft, we have enabled dynamic variable ordering in Syft, as Lisa and Part tool also use this dynamic option.
-As mentioned in the submission, the improved version of Syft can exhibit as much as 75% reduction in runtime compared to Syft.
+    For a fair comparison with Syft, we have enabled dynamic variable ordering in Syft, as Lisa and Part tool also use this dynamic option.
+    As mentioned in the submission, the improved version of Syft can exhibit as much as 75% reduction in runtime compared to Syft.
 
-5) Compile Lisa
------------------------------------
+5. Compile Lisa
 
-1. Copy the executable file ltlf2fol to lisa folder.
+    * Copy the executable file ltlf2fol to lisa folder.
 
-2. Compile Lisa with Make:
+    * Compile Lisa with Make:
     
-    make
+        make
 
-    or compile Lisa in command line:
+        or compile Lisa in command line:
 
-    g++ lisa.cc minimize.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc  -o lisa -lspot -lbddx -lcudd -O3
+        g++ lisa.cc minimize.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc  -o lisa -lspot -lbddx -lcudd -O3
 
 Command line usage
 =======
