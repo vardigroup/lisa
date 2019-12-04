@@ -117,7 +117,7 @@ void
 dfwa_min::prepare()
 {
     // create variables of dfwa_min::
-	cout << "minimized before prepare " << _aut._label_cube << endl;
+	//cout << "minimized before prepare " << _aut._label_cube << endl;
     prepare_variables();
     
     // disable dynamic variable ordering
@@ -141,7 +141,7 @@ dfwa_min::prepare()
     clock_t c_start = clock();
     _init = move_to_cudd(_aut._init);
 
-    cout << "minimized init: " << _init << endl;
+    //cout << "minimized init: " << _init << endl;
     // copy the transition relation
 #ifdef DEBUG
     cout << "buddy aut _trans: " << endl;
@@ -154,9 +154,10 @@ dfwa_min::prepare()
     all = all & reach;
     _aut._trans = _aut._trans & all;
 #endif
-    int count = bdd_nodecount(_aut._trans);
-    cout << "The number of nodes in transition after reach is " << bdd_nodecount(_aut._trans) << endl;
+    //int count = bdd_nodecount(_aut._trans);
+    //cout << "Number of nodes in transition after reach is " << bdd_nodecount(_aut._trans) << endl;
     _trans = move_to_cudd(_aut._trans);
+    cout << "Number of nodes in transition after renaming is: " << bdd_nodecount(_trans) << endl;
     // copy the final states
     //cout << "minimized trans: " << _trans << endl;
     _finals = move_to_cudd(_aut._finals);
@@ -165,7 +166,7 @@ dfwa_min::prepare()
     clock_t c_end = clock();
         cout << "Finished migrating BuDDy to CUDD in "
         	 << 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC << "ms ..."
-			 << "node for trans " << endl;
+			 << endl;
     // change label variables to block variables
     vector<cudd_bdd> prev_label_vec;
     for(unsigned i = 0; i < _label_vars.size(); i ++)
@@ -283,43 +284,43 @@ void
 dfwa_min::compute_block_number_rec(cudd_bdd_ptr dd, unordered_map<cudd_node_ptr, int> &table, int & block_number)
 {
     cudd_node_ptr node = dd.getNode();
-    cout << "Compute new partition from sigf(s, a, k) in compute_block_number_rec  " << endl;
+    //cout << "Compute new partition from sigf(s, a, k) in compute_block_number_rec  " << endl;
     // check whether node has been visited before
     unordered_map<cudd_node_ptr, int>::const_iterator it = table.find(node);
     if(it != table.end())
     {
-        cout << "Found in table  " << endl;
+        //cout << "Found in table  " << endl;
         return ;
     }
     vector<cudd_bdd> label_block(_label_vars);
     label_block.insert(label_block.end(), _block_vars[0].begin(), _block_vars[0].end());
     if (dd.IsOne()) 
     {
-      cout << "Constant node computed  " << dd << endl;
+      //cout << "Constant node computed  " << dd << endl;
       // never reach a constant node except the leaf-0.
       table[node] = block_number;
-      cout << "block number = " << block_number << endl;
+      //cout << "block number = " << block_number << endl;
       generate_all_bits(label_block, 0, dd, _manager->bddOne());
       ++ block_number;
     }else 
     // must not be constant zero
     if(! dd.IsZero())
     {
-        cout << "subformula: " << dd << endl;
+        //cout << "subformula: " << dd << endl;
         const unsigned int top_index = dd.NodeReadIndex();
         // check whether it is a state variable
         if (! is_state_variable(top_index)) 
         {
-          cout << "Non-state variables identified  " << endl;
+          //cout << "Non-state variables identified  " << endl;
           //Reached a block (signature). Compute its block number,
           table[node] = block_number;
-          cout << "block number = " << block_number << endl;
+          //cout << "block number = " << block_number << endl;
           generate_all_bits(label_block, 0, dd, _manager->bddOne());
           ++ block_number;
         } else 
         {
           // Traverse the BDD further.
-          cout << "State variables identified  " << endl;
+          //cout << "State variables identified  " << endl;
           cudd_bdd dd_var = _manager->bddVar(top_index);
           cudd_bdd low_cofactor = dd.Cofactor(!dd_var);
           // low branch in CUDD
@@ -342,7 +343,7 @@ dfwa_min::refine_partition_rec(cudd_bdd_ptr dd, unsigned & block_number
 , unordered_map<cudd_node_ptr, cudd_bdd> &computed_table)
 {
     cudd_node_ptr node = dd.getNode();
-    cout << "Compute new partition from sigf(s, a, k) in refine_partition_rec  " << endl;
+    //cout << "Compute new partition from sigf(s, a, k) in refine_partition_rec  " << endl;
     // check whether the node has been visited before
     unordered_map<cudd_node_ptr, cudd_bdd>::const_iterator it = computed_table.find(node);
     if(it != computed_table.end())
@@ -361,7 +362,7 @@ dfwa_min::refine_partition_rec(cudd_bdd_ptr dd, unsigned & block_number
     if(! is_state_variable(top_index) || dd.IsOne())
     {
     	// This is a node which representing a block
-        cout << "block  " << block_number << endl;
+        //cout << "block  " << block_number << endl;
         result = new_block_number(block_number, 0);
         ++ block_number;
 
@@ -372,7 +373,7 @@ dfwa_min::refine_partition_rec(cudd_bdd_ptr dd, unsigned & block_number
     }else
     {
         // Traverse the BDD further.
-        cout << "State variables identified  " << endl;
+        //cout << "State variables identified  " << endl;
         cudd_bdd dd_var = _manager->bddVar(top_index);
         cudd_bdd low_cofactor = dd.Cofactor(!dd_var);
         cudd_bdd low  = refine_partition_rec(low_cofactor, block_number, computed_table);
@@ -486,8 +487,8 @@ dfwa_min::initialize_partition()
     cudd_bdd reach = forward_explore();
     reach = reach & backward_explore();
     clock_t c_end = clock();
-    cout << "Finished cudd exploration in " << 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC << " ms " << reach.nodeCount()<< "\n";
-    // buddy is a bit fast than cudd. Not sure whether it is due to the encoding or
+    //cout << "Finished cudd exploration in " << 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC << " ms " << reach.nodeCount()<< "\n";
+    // buddy is a bit faster than cudd. Not sure whether it is due to the encoding or
     // that buddy is just faster than cudd
 #ifdef DEBUG
 	c_start = clock();
@@ -498,7 +499,7 @@ dfwa_min::initialize_partition()
 	cout << "Finished buddy exploration in " << 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC << " ms " << bdd_nodecount(b_reach)<< "\n";
 #endif
 
-    cout << "reachable non-final states: " << endl;
+    //cout << "reachable non-final states: " << endl;
     cudd_bdd non_finals = (! _finals) & reach;
     vector<cudd_bdd> curr_states(_state_vars[0]);
     generate_all_bits(curr_states, 0, non_finals, _manager->bddOne());
@@ -508,7 +509,7 @@ dfwa_min::initialize_partition()
     cudd_bdd block_1 = new_block_number(1, 0);
     cudd_bdd partition = (block_0 & _finals & reach) | (block_1 & non_finals);
     // debug info
-    cout << "Initial partition: " << endl;
+    //cout << "Initial partition: " << endl;
     curr_states.insert(curr_states.end(), _block_vars[0].begin(), _block_vars[0].end());
     generate_all_bits(curr_states, 0, partition, _manager->bddOne());
     // check whether we need to add sink transitions
@@ -531,7 +532,7 @@ dfwa_min::minimize()
     // sigref based minimization for algorithms
     // 1. P(X, K) is the initial partition of states
     cudd_bdd partition = initialize_partition();
-    cout << "Nodes in partition = " << partition.nodeCount() << endl;
+    //cout << "Nodes in partition = " << partition.nodeCount() << endl;
     unsigned prev_block_number = 2;
     unsigned iteration_num = 0;
     
@@ -540,30 +541,30 @@ dfwa_min::minimize()
     {
     	clock_t iter_start = clock();
         ++ iteration_num;
-        cout << "The number of blocks at iteration " << iteration_num << " is " << prev_block_number << endl;
+        cout << "Number of blocks at iteration " << iteration_num << " is " << prev_block_number << endl;
         // compute the signature sigf(s, a, k) = exists X'. T(X, A, X') and P(X', K)
         // first P(X, K) => P(X', K)
-        cout << "Permute P(X, K) => P(X', K)  " << endl;
+        //cout << "Permute P(X, K) => P(X', K)  " << endl;
         cudd_bdd state_next_partition = cudd_permute(partition, _state_vars[0], _state_vars[1]);
-        cout << "Nodes in partition = " << state_next_partition.nodeCount() << endl;
+        //cout << "Nodes in partition = " << state_next_partition.nodeCount() << endl;
         // sigf(s, a, k) = exists X'. T(X, A, X') and P(X', K)
-        cout << "Compute sigf(s, a, k) = exists X'. T(X, A, X') and P(X', K)  " << endl;
+        //cout << "Compute sigf(s, a, k) = exists X'. T(X, A, X') and P(X', K)  " << endl;
         cudd_bdd sigf = state_next_partition.AndAbstract(_trans, _next_cube);
-        cout << "Nodes in partition = " << sigf.nodeCount() << endl;
-        cout << "Permute P(X, K) => P(X, K')  " << endl;
+        //cout << "Nodes in partition = " << sigf.nodeCount() << endl;
+        //cout << "Permute P(X, K) => P(X, K')  " << endl;
         cudd_bdd block_next_partition = cudd_permute(partition, _block_vars[0], _block_vars[1]);
-        cout << "Nodes in partition = " << block_next_partition.nodeCount() << endl;
-        cout << "sigf(s, a, k) = sigf(s, a, k) & P(s, k')" << endl;
+        //cout << "Nodes in partition = " << block_next_partition.nodeCount() << endl;
+        //cout << "sigf(s, a, k) = sigf(s, a, k) & P(s, k')" << endl;
         sigf = sigf & block_next_partition;
         //result_sigf = sigf;
-        cout << "Nodes in partition = " << sigf.nodeCount() << endl;
+        //cout << "Nodes in partition = " << sigf.nodeCount() << endl;
         //sigf(s, a, k) [X, A, K]
         vector<cudd_bdd> new_state_label_block_1(_state_vars[0]);
         new_state_label_block_1.insert(new_state_label_block_1.end(), _label_vars.begin(), _label_vars.end());
         new_state_label_block_1.insert(new_state_label_block_1.end(), _block_vars[0].begin(), _block_vars[0].end());
         generate_all_bits(new_state_label_block_1, 0, sigf, _manager->bddOne());
         // refine the partition, traverse the BDD to compute block numbers
-        cout << "Compute new partition from sigf(s, a, k)   " << endl;
+        cout << "Compute new partition from signature..." << endl;
         //print(sigf);
         pair<cudd_bdd, unsigned> result = refine_partition(sigf);
         unsigned curr_block_number = result.second;
@@ -577,7 +578,7 @@ dfwa_min::minimize()
         prev_block_number = curr_block_number;
         // set refined partition
         partition = result.first;
-        cout << "Nodes in partition = " << partition.nodeCount() << endl;
+        //cout << "Nodes in partition = " << partition.nodeCount() << endl;
         // debug info
         //cout << "refined partition: " << endl << partition << endl;
         vector<cudd_bdd> new_state_label_block(_state_vars[0]);
@@ -591,11 +592,11 @@ dfwa_min::minimize()
 
     _num_min_states = prev_block_number;
     cout << "Finished DFA minimization after "<< iteration_num 
-         << " iterations. The number of states in minimal DFA is " << _num_min_states << endl;
+         << " iterations. \nThe number of states in minimal DFA is " << _num_min_states << endl;
     // construct new dfa
     // determine whether we can remove some variables
     reduce_block_variables(partition);
-    
+    /*
     cout << "minimized dfa: " << endl;
     for(unsigned i = 0; i < _block_vars.size(); i ++)
     {
@@ -603,43 +604,43 @@ dfwa_min::minimize()
         {
             cout << "var_" << i << " " << _block_vars[i][j] << endl;
         }
-    }
+    }*/
     
     //cout << "label cube = " << _label_cube << endl;
-    cout << "init: " << endl;
+    //cout << "init: " << endl;
     //cout << "before: " << _init << endl;
-    cout << "_curr_cube =" << _curr_cube << endl;
+    //cout << "_curr_cube =" << _curr_cube << endl;
     // I(K) = exists X. I(X) and P(X, K)
     _init = _init.AndAbstract(partition, _curr_cube);
    // cout << "after: " << _init << endl;
     
-    cout << "finals: " << endl;
+    //cout << "finals: " << endl;
     // F(K) = exists X. F(X) and P(X, K)
     //cout << "before: " << _finals << endl;
     //cout << "and: " << (_finals & partition) << endl;
     _finals = _finals.AndAbstract(partition, _curr_cube);
     //cout << "after: " << _finals << endl;
     
-    cout << "trans: " << endl;
+    //cout << "trans: " << endl;
     // P(X', K')
     vector<cudd_bdd> curr_states(_state_vars[0]);
     curr_states.insert(curr_states.end(), _block_vars[0].begin(), _block_vars[0].end());
     vector<cudd_bdd> next_states(_state_vars[1]);
     next_states.insert(next_states.end(), _block_vars[1].begin(), _block_vars[1].end());
     
-    cout << "P(X, K) => P(X', K')" << endl;
+    //cout << "P(X, K) => P(X', K')" << endl;
     cudd_bdd next_partition = cudd_permute(partition, curr_states, next_states);
     cout << "Computing the transition relation for minimal DFA..." << endl;
     clock_t t_start = clock();
 
     // R(s, a, k') := (∃t : T (s, a, t) ∧ P(t, k'))
-    cout << "R(s, a, k') := ∃t : T (s, a, t) ∧ P(t, k')" << endl;
-    cout << "#nodes in partition: " << partition.nodeCount() << endl;
-    cout << "#nodes in trans: " << _trans.nodeCount() << endl;
+    //cout << "R(s, a, k') := ∃t : T (s, a, t) ∧ P(t, k')" << endl;
+    //cout << "#nodes in partition: " << partition.nodeCount() << endl;
+    //cout << "#nodes in trans: " << _trans.nodeCount() << endl;
 
     cudd_bdd minimized_trans = _trans.AndAbstract(next_partition, _next_cube);
     // T P (s, a, t') := (∃s : R(s, a, k') ∧ P(s, k))
-    cout << "T(k, a, k') := ∃s :R(s, a, k') ∧ P(s, k)" << endl;
+    //cout << "T(k, a, k') := ∃s :R(s, a, k') ∧ P(s, k)" << endl;
     minimized_trans = minimized_trans.AndAbstract(partition, _curr_cube);
     //cout << minimized_trans << endl;
     /*
@@ -647,13 +648,13 @@ dfwa_min::minimize()
      */
     clock_t t_end = clock();
     cout << "Finished transition relation computation in " << 1000.0 * (t_end - t_start) / CLOCKS_PER_SEC << " ms\n";
-    cout << "Output Transitions" << endl;
+    //cout << "Output Transitions" << endl;
     vector<cudd_bdd> label_block(_label_vars);
     label_block.insert(label_block.end(), _block_vars[0].begin(), _block_vars[0].end());
     label_block.insert(label_block.end(), _block_vars[1].begin(), _block_vars[1].end());
     generate_all_bits(label_block, 0, minimized_trans, _manager->bddOne());
     _trans = minimized_trans;
-    cout << endl;
+    //cout << endl;
     clock_t c_end = clock();
     cout << "Finished DFA minimization in " << 1000.0 * (c_end-c_start) / CLOCKS_PER_SEC << " ms\n";
 }
@@ -754,7 +755,7 @@ void
 dfwa_min::reduce_block_variables(cudd_bdd_ptr partition)
 {
     // determine whether we can remove some variables
-	cout << "Reduced block variables..." << endl;
+	cout << "Reducing block variables..." << endl;
 	unsigned num = 0;
     while(true)
     {
@@ -766,9 +767,11 @@ dfwa_min::reduce_block_variables(cudd_bdd_ptr partition)
         }
         ++ num;
         _block_vars[0].pop_back();
+        /*
         cout << "number of vars: " << _num_states_vars << endl
              << "block[0].size() = " << _block_vars[0].size() << endl
 			 << "block[1].size() = " << _block_vars[1].size() << endl;
+        */
         _block_vars[1].pop_back();
         // remove redundant variables
         partition = partition.ExistAbstract(var_dd);
@@ -783,20 +786,20 @@ dfwa_min::reduce_block_variables(cudd_bdd_ptr partition)
 dfwa_ptr
 dfwa_min::move_dfwa()
 {
-	cout << "labels in previous dfa: " << _aut._label_cube << endl;
-	bdd_print_set(cout, _aut.get_dict(), _aut._label_cube);
-	cout << endl;
+	//cout << "labels in previous dfa: " << _aut._label_cube << endl;
+	//bdd_print_set(cout, _aut.get_dict(), _aut._label_cube);
+	//cout << endl;
 	dfwa* result = new dfwa(_aut.get_dict(), _aut._label_cube);
-	cout << "labels in minimal dfa: " << endl;
-	bdd_print_set(cout, result->get_dict(), result->_label_cube);
-	cout << endl;
+	//cout << "labels in minimal dfa: " << endl;
+	//bdd_print_set(cout, result->get_dict(), result->_label_cube);
+	//cout << endl;
 	//mapping block variables back to buddy variables
 	unordered_map<int, int> cudd_to_buddy_map;
 	// K -> S -> BUDDY
 	//vector<int> block_vars;
     result->_state_vars._copies = 2;
     // now we add variables from op1 and op2
-    cout << "Moving minimal DFA to BuDDy..." << endl;
+    //cout << "Moving minimal DFA to BuDDy..." << endl;
     // check whether this part can be improved
 
 	// compute mapping for state variables
@@ -822,7 +825,7 @@ dfwa_min::move_dfwa()
 		//++ num;
 	}
 
-	cout << "Now remove useless variables" << endl;
+	//cout << "Now remove useless variables" << endl;
 	int pop_num = result->_state_vars.get_bdd_vars(0).size() - _block_vars[0].size();
 	while(pop_num > 0)
 	{
@@ -840,7 +843,7 @@ dfwa_min::move_dfwa()
 		cudd_to_buddy_map[i] = _cudd_to_buddy_vars[i];
 		//cout << "map: " << i << "  -> " << _cudd_to_buddy_vars[i] << endl;
 	}
-	cout << "Migrating dfa representation from CUDD to BuDDy..." << endl;
+	cout << "Migrating DFA representation from CUDD to BuDDy..." << endl;
 	clock_t c_start = clock();
 	//cout << "cudd init: " << _init << endl;
 	// compute the initial states
@@ -849,11 +852,11 @@ dfwa_min::move_dfwa()
 	//cout << "cudd _finals: " << _finals << endl;
 	result->_finals = move_to_buddy(_finals, cudd_to_buddy_map);
 	//cout << "buddy finals: " << result->_finals << endl;
-    cout << "The number of nodes in minimal transition is " << _trans.nodeCount() << endl;
+    cout << "Number of nodes in minimal transition is " << _trans.nodeCount() << endl;
 	result->_trans = move_to_buddy(_trans, cudd_to_buddy_map);
 	//cout << "buddy trans: " << result->_trans << endl;
 	clock_t c_end = clock();
-	cout << "Finished migrating dfa representation from CUDD to BuDDy in "
+	cout << "Finished migrating DFA representation from CUDD to BuDDy in "
 		 << 1000.0 * (c_end - c_start)/CLOCKS_PER_SEC << "ms ..." << endl;
 
 	result->_curr_cube = result->_state_vars.get_cube(0);
@@ -863,7 +866,7 @@ dfwa_min::move_dfwa()
 	result->_curr_to_next_pairs = result->_state_vars.make_pair(0, 1);
 	result->_next_to_curr_pairs = result->_state_vars.make_pair(1, 0);
 	result->_reach = bddtrue;//result.explore();
-    cout << "Finished computing dfa representation in BuDDy..." << endl;
+    cout << "Finished computing DFA representation in BuDDy..." << endl;
     /*
     cout << "is_even(8) = " << is_even(8) << endl;
     cout << "is_even(9) = " << is_even(9) << endl;
