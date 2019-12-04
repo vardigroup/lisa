@@ -111,7 +111,7 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
 
     Lisa also can use Sylvan for symbolic DFA minimization.
 
-    * Dowload Sylvan from https://github.com/trolando/sylvan.git
+    * Download Sylvan from https://github.com/trolando/sylvan.git
 
     * Install Sylvan:
 
