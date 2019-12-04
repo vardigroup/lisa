@@ -92,7 +92,7 @@ dfwa_var::prepare_vars()
 			bdd dd = bdd_ithvar(var_index);
 			_dd_vars[copy].push_back(dd);
 			_dd_names[copy].push_back(dd_name);
-			cout << "dd_name = " << dd_name << " var_num = " << var_index << endl;
+			//cout << "dd_name = " << dd_name << " var_num = " << var_index << endl;
 		}
 	}
     ++ index_for_vars;
@@ -180,7 +180,7 @@ dfwa_var::add_bdd_vars(dfwa_var& vars)
 	// needs to register state variables before use
 	_dict->register_all_variables_of(other, this);
     unsigned copies = max(_copies, vars.get_copies());
-    cout << "add state vars: copies = " << copies << endl;
+    //cout << "add state vars: copies = " << copies << endl;
     for(unsigned i = 0; i < copies; i ++)
     {
         if(i < _dd_vars.size())

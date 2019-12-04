@@ -81,7 +81,7 @@ static struct opt_t
 void 
 get_formulas(vector<formula>& lst, formula f)
 {
-    //cout << "split formula " << endl;
+    cout << "Breaking formula into small pieces..." << endl;
     if(f.kind() == op::And)
     {
         // needs to limit the number of conjunctions if no minimization is used before producting two FAs
@@ -94,7 +94,7 @@ get_formulas(vector<formula>& lst, formula f)
     {
         lst.push_back(f);
     }
-    cout << "split formula " << endl;
+    //cout << "split formula " << endl;
 }
 
 class dfwa_pair
@@ -538,7 +538,7 @@ main(int argc, char** argv)
         	{
         		// explict representation used
         		twa_graph_ptr P = spot::product(A, B);
-        		cout << "explicit minimization starts..." << endl;
+        		//cout << "explicit minimization starts..." << endl;
         		P = spot::minimize_wdba(P);
         		optimized.insert(P);
         		dfwa_pair pair(P, P->num_states(), true, result_formula);
@@ -667,7 +667,7 @@ main(int argc, char** argv)
     // synthesis
 	vector<string> input;
 	vector<string> output;
-	cout << "read part file " << endl;
+	//cout << "read part file " << endl;
 	if(opt->_parfile_name != nullptr)
 	{
 		read_from_part_file(opt->_parfile_name, input, output);

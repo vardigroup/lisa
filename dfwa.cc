@@ -444,7 +444,7 @@ check_assumption(dfwa_ptr op1, dfwa_ptr op2)
 	{
 		if(vars.find(bdd_var(vars_2[i])) != vars.end())
 		{
-			cerr << "product: The state variables are not different -> ";
+			cerr << "Product: The state variables are not different -> ";
 			bdd_print_set(cerr, op1._state_vars.get_dict(), vars_2[i]);
 			cerr << endl;
 			for(unsigned j = 0; j < vars_1.size(); j ++)
@@ -463,72 +463,75 @@ product_dfwa(dfwa_ptr op1, dfwa_ptr op2, function<bdd(bdd&, bdd&)> func)
 	check_assumption(op1, op2);
 
 	bdd label_cube = op1._label_cube & op2._label_cube;
-	cout << "labels in op1: " << endl;
+	/*
+    cout << "labels in op1: " << endl;
 	bdd_print_set(cout, op1.get_dict(), op1._label_cube);
 	cout << endl;
 	cout << "labels in op2: " << endl;
 	bdd_print_set(cout, op1.get_dict(), op2._label_cube);
 	cout << endl;
-	dfwa* result = new dfwa(op1.get_dict(), label_cube);
-	cout << "labels in product: " << endl;
-	bdd_print_set(cout, op1.get_dict(), result->_label_cube);
-	cout << endl;
+	*/
+    dfwa* result = new dfwa(op1.get_dict(), label_cube);
+	//cout << "labels in product: " << endl;
+	//bdd_print_set(cout, op1.get_dict(), result->_label_cube);
+	//cout << endl;
     // set the copies of state variables
     result->_state_vars._copies = 2;
     // now we add variables from op1 and op2
-    cout << "Computing the product..." << endl;
+    cout << "Computing the product of two DFAs..." << endl;
     // check whether this part can be improved
     result->_state_vars.add_bdd_vars(op1._state_vars);
     result->_state_vars.add_bdd_vars(op2._state_vars);
-    cout << "state vars in op1: " << endl;
-    bdd_print_set(cout, op1.get_dict(), op1._curr_cube);
-    cout << endl;
-    cout << "state vars in op2: " << endl;
-    bdd_print_set(cout, op1.get_dict(), op2._curr_cube);
-    cout << endl;
-    cout << "#AP1 = " << op1._state_vars._dd_vars[0].size() << " #AP2 = " <<  op2._state_vars._dd_vars[0].size() << endl;
-    cout << "#PRO = " << result->_state_vars._dd_vars[0].size() << endl;
-
-    cout << "_init in op1: " << endl;
+    //cout << "state vars in op1: " << endl;
+    //bdd_print_set(cout, op1.get_dict(), op1._curr_cube);
+    //cout << endl;
+    //cout << "state vars in op2: " << endl;
+    //bdd_print_set(cout, op1.get_dict(), op2._curr_cube);
+    //cout << endl;
+    cout << "Number of current state variables in the two DFAs are respectively: " << op1._state_vars._dd_vars[0].size() << ", " <<  op2._state_vars._dd_vars[0].size() << endl;
+    cout << "Number of current state variables in the product is: " << result->_state_vars._dd_vars[0].size() << endl;
+    //cout << "_init in op1: " << endl;
     //bdd_print_set(cout, op1.get_dict(), op1.get_init());
-    cout << endl;
-    cout << "_init in op2: " << endl;
+    //cout << endl;
+    //cout << "_init in op2: " << endl;
     //bdd_print_set(cout, op1.get_dict(), op2.get_init());
-    cout << endl;
+    //cout << endl;
     result->_init = op1.get_init() & op2.get_init();
-    cout << "initial in product: " << endl;
+    //cout << "initial in product: " << endl;
     //bdd_print_set(cout, op1.get_dict(), result->_init);
-    cout << endl;
+    //cout << endl;
     // especially for the transition relation
-    cout << "#trans1 = " << bdd_nodecount(op1.get_trans()) << " #trans2 = " << bdd_nodecount(op2.get_trans()) << endl;
+    //cout << "#trans1 = " << bdd_nodecount(op1.get_trans()) << " #trans2 = " << bdd_nodecount(op2.get_trans()) << endl;
     cout << "Computing transition relation in the intersection product..." << endl;
     result->_trans = op1.get_trans() & op2.get_trans();
-    cout << "trans in product: " << endl;
+    //cout << "trans in product: " << endl;
     //bdd_print_set(cout, op1.get_dict(), result->_trans);
-    cout << endl;
+    //cout << endl;
     cout << "Finished computing transition relation in the intersection product..." << endl;
+    cout << "Number of nodes in the transition BDD of the product is: " << bdd_nodecount(result->_trans)  << endl;
+
     bdd finals_1 = op1.get_finals();
     bdd finals_2 = op2.get_finals();
-    cout << "_finals in op1: " << endl;
+    //cout << "_finals in op1: " << endl;
     //bdd_print_set(cout, op1.get_dict(), finals_1);
-    cout << endl;
-    cout << "_finals in op2: " << endl;
+    //cout << endl;
+    //cout << "_finals in op2: " << endl;
     //bdd_print_set(cout, op1.get_dict(), finals_2);
-    cout << endl;
+    //cout << endl;
     result->_finals = func(finals_1, finals_2);
-    cout << "finals in product: " << endl;
+    //cout << "finals in product: " << endl;
     //bdd_print_set(cout, op1.get_dict(), result->_finals);
-    cout << endl;
+    //cout << endl;
     result->_reach = bddtrue;
     //result->_label_cube = op1._label_cube & op2._label_cube;
     result->_curr_cube = result->_state_vars.get_cube(0);
-    cout << "state vars_0 in product: " << endl;
-    bdd_print_set(cout, op1.get_dict(), result->_curr_cube);
-    cout << endl;
+    //cout << "state vars_0 in product: " << endl;
+    //bdd_print_set(cout, op1.get_dict(), result->_curr_cube);
+    //cout << endl;
     result->_next_cube = result->_state_vars.get_cube(1);
-    cout << "state vars_1 in product: " << endl;
-    bdd_print_set(cout, op1.get_dict(), result->_next_cube);
-    cout << endl;
+    //cout << "state vars_1 in product: " << endl;
+    //bdd_print_set(cout, op1.get_dict(), result->_next_cube);
+    //cout << endl;
     // make pairs
     result->_curr_to_next_pairs = result->_state_vars.make_pair(0, 1);
     result->_next_to_curr_pairs = result->_state_vars.make_pair(1, 0);

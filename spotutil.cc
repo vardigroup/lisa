@@ -260,20 +260,20 @@ output_bdd(ostream& os, bdd dd)
 bdd
 local_bdd_and(bdd& op1, bdd& op2)
 {
-	cout << "Inside local_bdd_and..." << endl;
+	//cout << "Inside local_bdd_and..." << endl;
 	return op1 & op2;
 }
 
 bdd
 local_bdd_or(bdd& op1, bdd& op2)
 {
-	cout << "Inside local_bdd_or..." << endl;
+	//cout << "Inside local_bdd_or..." << endl;
 	return op1 | op2;
 }
 
 bdd
 local_bdd_not_and(bdd& op1, bdd& op2)
 {
-	cout << "Inside local_bdd_not_and..." << endl;
+	//cout << "Inside local_bdd_not_and..." << endl;
 	return op1 & !op2;
 }
