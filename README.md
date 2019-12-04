@@ -125,11 +125,11 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
 
     * Compile Lisa with Make:
     
-            make
+            make T12
 
         or compile Lisa in command line:
 
-            g++ lisa.cc minimize.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc  -o lisa -lspot -lbddx -lcudd -O3
+            g++ lisa.cc minimize.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc dfwamin3.cc  -o lisa -lspot -lbddx -lcudd -lsylvan -O3
 
 Command line usage
 =======
