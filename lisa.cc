@@ -386,7 +386,7 @@ symbolize_twa(bdd_dict_ptr dict, twa_graph_ptr aut)
 	{
 		bdd f_var = bdd_ithvar(aut->register_ap(f));
 		label_cube = label_cube & f_var;
-		cout << "formula : " << f << " index: " << aut->register_ap(f) << endl;
+		//cout << "formula : " << f << " index: " << aut->register_ap(f) << endl;
 	}
 
 	set<unsigned> finals_aut;
@@ -459,20 +459,21 @@ main(int argc, char** argv)
     clock_t c_start = clock();
     spot::bdd_dict_ptr dict = spot::make_bdd_dict();
     formula input_f;
+	cout << "Starting the decomposition phase" << endl;
     if (ltlfile.is_open()) 
     {
         getline (ltlfile, line);
-        cout << "formula: " << line << endl;
+        //cout << "formula: " << line << endl;
         auto pf1 = spot::parse_infix_psl(line.c_str());
         if (pf1.format_errors(std::cerr))
         {
-            std::cerr << "error: " << line << std::endl;
+            std::cerr << "Error: " << line << std::endl;
             return -1;
         }
         // formula 
         input_f = pf1.f;
         vector<formula> lst;
-        cout << "parsed: " << pf1.f << endl;
+        //cout << "parsed: " << pf1.f << endl;
         get_formulas(lst, pf1.f);
         /*
         set<formula> ap_set;
@@ -488,33 +489,34 @@ main(int argc, char** argv)
             // translating automata
             formula f = lst.back();
             lst.pop_back();
-            cout << str_psl(f, true) << endl;
+            // cout << str_psl(f, true) << endl;
             twa_graph_ptr aut = trans_formula(f, dict, opt->_num_ap_for_mona);
-            cout << aut->num_states() << endl;
+            // cout << aut->num_states() << endl;
             dfwa_pair pair(aut, aut->num_states(), true, f);
             pair._num_propduct = 0;
-            cout << "st = " << aut->num_states() << endl;
+            // cout << "st = " << aut->num_states() << endl;
             autlist.push(pair);
         }
         ltlfile.close();
     }
 
-    cout << "splited formulas" << endl;
+    //cout << "splited formulas" << endl;
     // do products 
-    //bdd_autoreorder(BDD_REORDER_WIN2ITE);
+    bdd_autoreorder(BDD_REORDER_WIN2ITE);
+	cout << "Starting the composition phase" << endl;
+
     set<twa_graph_ptr> optimized;
     while(autlist.size() > 1) 
     {
-        cout << "loop starts: sorting " << autlist.size() << endl;
-        cout << "sorted ..." << endl;
+        cout << "Number of DFAs in the set: " << autlist.size() << endl;
         dfwa_pair first = autlist.top();
         autlist.pop();
         dfwa_pair second = autlist.top();
         autlist.pop();
-        cout << "poped two elements #fst = " << first._num_states
-        		<< " #snd = " << second._num_states << endl;
+        cout << "Number of states or nodes in M1 and M2: " << first._num_states
+        		<< ",  " << second._num_states << endl;
         formula result_formula = formula::And({first._formula, second._formula});
-        cout << result_formula << endl;
+        //cout << result_formula << endl;
         bool must_symbolic = opt->_num_last_automata > 0 && autlist.size() + 2 <= opt->_num_last_automata;
         if(first._is_explicit && second._is_explicit)
         {
@@ -541,7 +543,7 @@ main(int argc, char** argv)
         		optimized.insert(P);
         		dfwa_pair pair(P, P->num_states(), true, result_formula);
         		pair._num_propduct = 1;
-        		cout << "explicit product finished, result has " << P->num_states() << " states" << endl;
+        		cout << "Number of states in explicit product is: " << P->num_states() << endl;
         		autlist.push(pair);
         	}else
         	{
@@ -556,7 +558,7 @@ main(int argc, char** argv)
         		{
         			pair._num_propduct = 2;
         		}
-        		cout << "symbolic product finished, result has " << get<1>(result) << " states" << endl;
+        		cout << "Number of nodes in symbolic product is: " << get<1>(result) << endl;
         		autlist.push(pair);
         		delete fst;
         		delete snd;
@@ -599,7 +601,7 @@ main(int argc, char** argv)
 			{
 				pair._num_propduct = num;
 			}
-			cout << "symbolic product finished, result has " << get<1>(result) << " states" << endl;
+			cout << "Number of nodes in symbolic product is: " <<  get<1>(result) << endl;
 			autlist.push(pair);
 			delete B;
         }else
@@ -610,7 +612,7 @@ main(int argc, char** argv)
         	unsigned num = first._num_propduct + second._num_propduct;
         	tuple<dfwa*, unsigned, bool> result = make_product(dict, A, B, num);
         	dfwa_pair pair(get<0>(result), get<1>(result), false, result_formula);
-        	cout << "symbolic product finished, result has " << get<1>(result) << " states" << endl;
+        	cout << "Number of nodes in symbolic product is: " << get<1>(result) << endl;
         	autlist.push(pair);
         	if(get<2>(result))
         	{
@@ -628,6 +630,7 @@ main(int argc, char** argv)
     cout << "Finished constructing minimal dfa in "
     		 << 1000.0 * (c_end - c_start)/CLOCKS_PER_SEC << "ms ..." << endl;
     dfwa_pair pair = autlist.top();
+	cout << "Number of states (or nodes) is: " << pair._num_states << endl;
     if(pair._is_explicit && optimized.find(pair._twa) == optimized.end())
     {
     	// in case we only have one DFA and it is not minimized
@@ -670,11 +673,11 @@ main(int argc, char** argv)
 		read_from_part_file(opt->_parfile_name, input, output);
 	}else
 	{
-		cerr << "please specify the file for inputs and outputs" << endl;
+		cerr << "Please input the file name for inputs and outputs" << endl;
 		exit(-1);
 	}
-	cout << "The number of nodes in transition is " << bdd_nodecount(aut->_trans) << endl;
-	cout << "finished reading part file " << endl;
+	//cout << "The number of nodes in transition is " << bdd_nodecount(aut->_trans) << endl;
+	//cout << "finished reading part file " << endl;
 	// NOTE that some propositions may not be used in DFA
 	bdd input_cube = bddtrue;
 	bdd output_cube = bddtrue;
@@ -693,7 +696,7 @@ main(int argc, char** argv)
 	}
 #endif
 	//cout << dict->var_map << endl;
-	cout << "partition of propositions" << endl;
+	//cout << "partition of propositions" << endl;
 	for(string& in : input)
 	{
 		formula f = formula::ap(in);
@@ -702,13 +705,13 @@ main(int argc, char** argv)
 		{
 			continue;
 		}
-		cout << "in: " << in << " ";
+		//cout << "in: " << in << " ";
 		int var_index = dict->varnum(f);
-		cout << var_index << endl;
+		//cout << var_index << endl;
 		bdd p = bdd_ithvar(var_index);
 		input_cube = input_cube & p;
 	}
-	cout << "done with input propositions" << endl;
+	//cout << "done with input propositions" << endl;
 	for(string& out : output)
 	{
 		formula f = formula::ap(out);
@@ -717,9 +720,9 @@ main(int argc, char** argv)
 		{
 			continue;
 		}
-		cout << "out: " << out  << " ";
+		//cout << "out: " << out  << " ";
 		int var_index = dict->varnum(f);
-		cout << var_index << endl;
+		//cout << var_index << endl;
 		bdd p = bdd_ithvar(var_index);
 		output_cube = output_cube & p;
 	}
@@ -727,7 +730,7 @@ main(int argc, char** argv)
 	int var_index = dict->varnum(formula::ap(alive_ap));
 	bdd p = bdd_ithvar(var_index);
 	output_cube = output_cube & p;
-	cout << "out: " << alive_ap << " " << var_index << endl;
+	//cout << "out: " << alive_ap << " " << var_index << endl;
 
 	//aut->output(cout);
 	{
@@ -739,6 +742,9 @@ main(int argc, char** argv)
 		if(opt->_env_first)
 		{
 			syn.env_play_first();
+			cout << "Environment will play first" << endl;
+		}else{
+			cout << "System will play first" << endl;
 		}
 		syn.is_realizable();
 		if(opt->_out_start)
