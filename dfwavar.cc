@@ -217,7 +217,7 @@ dfwa_var::add_ordered_bdd_vars(dfwa_var& vars)
     assert(vars.get_copies() == 2);
     assert(get_copies() == 2);
     vector<bdd> all_vars;
-    cout << "add state vars: copies = " << _copies << endl;
+    //cout << "add state vars: copies = " << _copies << endl;
     for(unsigned i = 0; i < vars.get_copies(); i ++)
     {
     	vector<bdd>& add = vars.get_bdd_vars(i);
