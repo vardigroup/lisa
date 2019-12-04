@@ -23,7 +23,7 @@ dfwa_min_sylvan::prepare_variables()
 
     // 1. create state variables for dfa minimization
     // (X, X')
-    cout << "buddy state cube: " << endl;
+    //cout << "buddy state cube: " << endl;
     // current and next state variable vectors
     vector<uint32_t> curr_states;
     _state_vars.push_back(curr_states);
