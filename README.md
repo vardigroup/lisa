@@ -14,7 +14,7 @@ Third-party dependencies
 
 * [Spot model checker](https://spot.lrde.epita.fr/)
 
-* [Syft LTLf Synthesizer](https://github.com/liyong31/Syft)
+* [Syft LTLf synthesizer](https://github.com/liyong31/Syft)
 
 * [MONA](https://github.com/liyong31/MONA)
 
@@ -23,8 +23,7 @@ Third-party dependencies
 * [Sylvan library](https://github.com/trolando/sylvan)
 
 Lisa relies on Spot and MONA to construct a DFA from a small LTLf formula.
-When constructing a DFA from an LTLf formula with MONA, Lisa requires Syft to
-translate an LTLf formula to a formula in first order logic, which is then fed into MONA.
+When constructing a DFA from an LTLf formula with MONA, Lisa requires Syft to translate an LTLf formula to a formula in first order logic, which is then fed into MONA.
 
 Complilation steps
 =======
@@ -38,7 +37,8 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
     * Get the latest version of Spot from https://spot.lrde.epita.fr/install.html.
 
     * Uncompress Spot and follow install intructions in README to install Spot. Note that the compilation of Spot may take a while.
-    For instance ./configure && make && sudo make install
+    
+            ./configure && make && sudo make install
 
     * Type ltl2tgba -f "F a" in command line, you expect to see some output starting with "HOA: v1".
 
@@ -46,13 +46,15 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
 
     Syft needs CUDD to perform BDD operations and Lisa employs CUDD for symbolic DFA minimization.
 
-    * Uncompress cudd.zip or get CUDD from https://github.com/ivmai/cudd.
+    * Uncompress cudd.zip or get CUDD from https://github.com/KavrakiLab/cudd.git.
 
     * Install CUDD:
-        ./configure --enable-silent-rules --enable-obj --enable-dddmp --prefix=[install location]
-        sudo make install
 
-        If you encounter an error about aclocal, this might can be fixed as follows.
+        ./configure --enable-silent-rules --enable-obj --enable-dddmp --prefix=[install location]
+
+            sudo make install
+
+        If you encounter an error about aclocal, this might be fixed as follows.
         * Not having automake:
         
             sudo apt-get install automake
@@ -60,6 +62,7 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
 
             autoreconf -i
         * Using a version of aclocal other than 1.14:
+
             modify the version 1.14 in configure file accordingly.
 
 3. Install MONA
@@ -68,12 +71,12 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
 
     * Go to mona-1.4-17 directory and follow the install instructions in INSTALL.
     
-        For instance ./configure && make && sudo make install-strip
+            ./configure && make && sudo make install-strip
 
     **NOTE**
 
     In BDD/bdd.h, the original table size is defined as #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000 (=2^24), which is too small for the DFA generation comparison.
-    For a fair comparison with MONA, we modify it to #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000000 (=2^36), so to allow MONA have larger table size during DFA construction.
+    We modify it to #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000000 (=2^36), so to allow MONA have larger table size during DFA construction.
     Note that MONA has explicit state representation but encodes the labels on transition symbolically.
     For more details on the representation of DFA in MONA, we refer to https://www.brics.dk/mona/mona14.pdf.
     
@@ -83,41 +86,50 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
     Please make sure that you have network connection during the installation of flex, bison and boost.
 
     * Install flex and bison:
-        sudo apt-get install flex bison
+
+            sudo apt-get install flex bison
 
     * Install BOOST:
-        sudo apt-get install libboost-dev
+        
+            sudo apt-get install libboost-dev
 
     * Go to Syft directory and make build folder under Syft folder:
 
-        mkdir build && cd build
+            mkdir build && cd build
 
     * Run CMake to generate the makefile:
 
-        cmake ..
+            cmake ..
 
     * Compile using the generated makefile:
 
-        make
+            make
    
     Then you should be able to find two executables ltlf2fol and Syft inside the folder Syft/build/bin.
 
-    **NOTE**
+5. Compile Sylvan
 
-    For a fair comparison with Syft, we have enabled dynamic variable ordering in Syft, as Lisa and Part tool also use this dynamic option.
-    As mentioned in the submission, the improved version of Syft can exhibit as much as 75% reduction in runtime compared to Syft.
+    Lisa also can use Sylvan for symbolic DFA minimization.
 
-5. Compile Lisa
+    * Dowload Sylvan from https://github.com/trolando/sylvan.git
+
+    * Install Sylvan:
+
+            mk build && cd build && cmake .. && sudo make install
+
+    You may need to restart the system for Sylvan to work
+
+6. Compile Lisa
 
     * Copy the executable file ltlf2fol to lisa folder.
 
     * Compile Lisa with Make:
     
-        make
+            make
 
         or compile Lisa in command line:
 
-        g++ lisa.cc minimize.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc  -o lisa -lspot -lbddx -lcudd -O3
+            g++ lisa.cc minimize.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc  -o lisa -lspot -lbddx -lcudd -O3
 
 Command line usage
 =======
