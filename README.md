@@ -133,6 +133,25 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
 
             g++ lisa.cc minimize.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc dfwamin3.cc  -o lisa -lspot -lbddx -lcudd -lsylvan -O3
 
+Input format
+=======
+
+Lisa accepts LTLf formulas given as a .ltlf file written in SPOT format. 
+For synthesis, it also requires a .part file. The .part file indicates the input and output propostitions for the synthesis tasks. 
+
+Example .ltltf file
+
+```
+((COUNTER0 <-> INITCOUNTER0)) && (G (CARRY0 <-> INC)) && (G ((X COUNTER0 -> !(COUNTER0 <-> CARRY0)) && (X !COUNTER0 -> (COUNTER0 <-> CARRY0)))) && ((G ((!INC -> X INC)) -> F (!COUNTER0)))
+```
+
+Example .part file
+
+```
+.inputs INITCOUNTER0 INC
+.outputs COUNTER0 CARRY0
+```
+
 Command line usage
 =======
 
