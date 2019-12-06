@@ -44,8 +44,6 @@
 #include "dfwamin.hh"
 #include "dfwamin2.hh"
 #include "dfwamin3.hh"
-#include "minimize.hh"
-#include "synt.hh"
 
 using namespace spot;
 using namespace std;
