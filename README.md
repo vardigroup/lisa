@@ -1,7 +1,9 @@
 Overview
 =======
 
-Lisa is an LTLf synthesis tool publicly available under the license GNU GPL v3.
+Lisa is an (a) LTLf to DFA conversion tool, and (b) an LTLf synthesis tool. 
+
+It is publicly available underthe license GNU GPL v3.
 
 
 Requirements
