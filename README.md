@@ -137,7 +137,8 @@ Input format
 =======
 
 Lisa accepts LTLf formulas given as a .ltlf file written in SPOT format. 
-For synthesis, it also requires a .part file. The .part file indicates the input and output propostitions for the synthesis tasks. 
+
+For synthesis, it also requires a .part file. The .part file indicates the input and output propostitions for the synthesis task. 
 
 Example .ltltf file
 
@@ -180,6 +181,8 @@ Read a formula file and output the number of states of the constructed DFA
  -env                  environment plays first
 ```
 
+For LTLf to DFA construction
+==
 1. To use the default setting to construct a DFA from an LTLf formula, type
     
         ./lisa -ltlf ./examples/ltlf3377.ltlf
@@ -217,17 +220,18 @@ Read a formula file and output the number of states of the constructed DFA
     This is because that we use Spot data structure to store DFAs in explicit-state form but Spot only supports automata accepting infinite words.
     Therefore, we need to use an extra sink state for the Spot automata as an indicator that it is the end of a finite trace for DFAs.
 
-3. To perform the synthesis step after DFA generation, type
+For LTLf synthesis
+==
+
+1. To perform the synthesis step after DFA generation, type
     
         ./lisa -ltlf ./examples/ltlf3377.ltlf -part ./examples/ltlf3377.part -syn
     
     where the input and output variables in the LTLf formula are specified in the file ltlf3377.part.
     You are expected to see that Lisa outputs "UNREALIZABLE", as this specification is unrealizable.
 
-4. To let the environment move first in the DFA game for LTLf synthesis, type
+2. To let the environment move first in the DFA game for LTLf synthesis, type
 
         ./lisa -ltlf ./examples/ltlf3377.ltlf -part ./examples/ltlf3377.part -syn -env
     
-    Note that in the experiments conducted for the submission, we always let environment move first in the DFA game.
-    Still, Lisa outputs "UNREALIZABLE", as this specification is unrealizable.
 
