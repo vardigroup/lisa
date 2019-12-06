@@ -3,7 +3,7 @@ Overview
 
 Lisa is an (a) LTLf to DFA conversion tool, and (b) an LTLf synthesis tool. 
 
-It is publicly available underthe license GNU GPL v3.
+It is publicly available under the license GNU GPL v3.
 
 
 Requirements
@@ -52,7 +52,7 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
 
     * Install CUDD:
 
-        ./configure --enable-silent-rules --enable-obj --enable-dddmp --prefix=[install location]
+            ./configure --enable-silent-rules --enable-obj --enable-dddmp --prefix=[install location]
 
             sudo make install
 
@@ -75,9 +75,8 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
     
             ./configure && make && sudo make install-strip
 
-    **NOTE**
-
-    In BDD/bdd.h, the original table size is defined as #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000 (=2^24), which is too small for the DFA generation comparison.
+    **NOTE** 
+    In BDD/bdd.h, the original table size is defined as #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000 (=2^24), which is too small for large DFA generation.
     We modify it to #define BDD_MAX_TOTAL_TABLE_SIZE 0x1000000000 (=2^36), so to allow MONA have larger table size during DFA construction.
     Note that MONA has explicit state representation but encodes the labels on transition symbolically.
     For more details on the representation of DFA in MONA, we refer to https://www.brics.dk/mona/mona14.pdf.
@@ -127,7 +126,7 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
 
     * Compile Lisa with Make:
     
-            make T12
+            make T1
 
         or compile Lisa in command line:
 
