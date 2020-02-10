@@ -43,7 +43,7 @@
 #include "synt.hh"
 #include "dfwamin.hh"
 #include "dfwamin2.hh"
-#include "dfwamin3.hh"
+//#include "dfwamin3.hh"
 
 using namespace spot;
 using namespace std;
@@ -187,12 +187,15 @@ minimize_symbolic(dfwa_ptr P)
 		result = make_tuple<>(&res, num_states, true);
 	}else
 	{
+		/*
 		dfwa_min_sylvan min(P);
 		min.minimize();
 		dfwa_ptr res = min.move_dfwa();
 		// check wehter the emptiness is changed
 		num_states = min.get_num_min_states();
 		result = make_tuple<>(&res, num_states, true);
+	
+		*/
 	}
 	return result;
 }
@@ -238,7 +241,7 @@ void print_usage()
 	cout << " -min" << "                  minimize the last symbolic DFA (default false)" << endl;
 	cout << " -syn" << "                  synthesize after DFA construction (default false)" << endl;
 	cout << " -bdd" << "                  use buddy for DFA minimization" << endl;
-	cout << " -syl" << "                  use sylvan for DFA minimization (default)" << endl;
+	//cout << " -syl" << "                  use sylvan for DFA minimization (default)" << endl;
 	cout << " -cdd" << "                  use cudd for DFA minimization" << endl;
 	cout << " -nap" << "  <int>           number of atomic propositions for calling mona (default 7)" << endl;
 	cout << " -npr" << "  <int>           number of products for calling minimization (default 6)" << endl;
@@ -345,11 +348,13 @@ void parse_opt(int argc, char** argv)
 			opt->_bdd = 2;
 			continue;
 		}
+		/*
 		if(s == "-syl")
 		{
 			opt->_bdd = 0;
 			continue;
 		}
+		*/
 		if(s == "-h")
 		{
 			print_usage();
