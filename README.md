@@ -153,7 +153,6 @@ Read a formula file and output the number of states of the constructed DFA
  -min                  minimize the last symbolic DFA (default false)
  -syn                  synthesize after DFA construction (default false)
  -bdd                  use buddy for DFA minimization
- -syl                  use sylvan for DFA minimization (default)
  -cdd                  use cudd for DFA minimization
  -nap  <int>           number of atomic propositions for calling mona (default 7)
  -npr  <int>           number of products for calling minimization (default 6)
