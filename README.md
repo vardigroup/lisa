@@ -22,8 +22,6 @@ Third-party dependencies
 
 * [CUDD library](https://github.com/KavrakiLab/cudd.git)
 
-* [Sylvan library](https://github.com/trolando/sylvan)
-
 Lisa relies on Spot and MONA to construct a DFA from a small LTLf formula.
 When constructing a DFA from an LTLf formula with MONA, Lisa requires Syft to translate an LTLf formula to a formula in first order logic, which is then fed into MONA.
 
@@ -108,18 +106,6 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
    
     Then you should be able to find two executables ltlf2fol and Syft inside the folder Syft/build/bin.
 
-5. Compile Sylvan
-
-    Lisa also can use Sylvan for symbolic DFA minimization.
-
-    * Download Sylvan from https://github.com/trolando/sylvan.git
-
-    * Install Sylvan:
-
-            mk build && cd build && cmake .. && sudo make install
-
-    You may need to restart the system for Sylvan to work
-
 6. Compile Lisa
 
     * Copy the executable file ltlf2fol to lisa folder.
@@ -130,7 +116,7 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
 
         or compile Lisa in command line:
 
-            g++ lisa.cc minimize.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc dfwamin3.cc  -o lisa -lspot -lbddx -lcudd -lsylvan -O3
+            g++ lisa.cc minimize.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc dfwamin3.cc  -o lisa -lspot -lbddx -lcudd  -O3
 
 Input format
 =======
