@@ -215,7 +215,7 @@ In particular *X[!]1* is true iff there is a successor.
 - Alexandre Duret-Lutz : [Spot](https://spot.lrde.epita.fr/)
 - Jørn Lind-Nielsen: [BuDDy](http://vlsicad.eecs.umich.edu/BK/Slots/cache/www.itu.dk/research/buddy/)
 - Fabio Somenzi: [CUDD](https://github.com/ivmai/cudd)
-- Tom van Dijk: [Sylvan](https://github.com/trolando/sylvan)
 - Shufang Zhu: [Syft](https://github.com/saffiepig/Syft)
+- Aarhus University: [MONA](http://www.brics.dk/mona)
     
 
