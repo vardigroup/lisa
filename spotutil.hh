@@ -1,6 +1,10 @@
 
 #pragma once
 
+// Enable the strong Next operator for LTLf formula
+#define SPOT_WANT_STRONG_X 1
+#define SPOT_HAS_STRONG_X 1
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -28,6 +32,7 @@
 
 #include <bddx.h>
 
+
 using namespace std;
 using namespace spot;
 
@@ -49,7 +54,13 @@ void
 get_final_states(twa_graph_ptr aut, set<unsigned>& finals);
 
 void
+get_nonfinal_states(twa_graph_ptr A, set<unsigned>& nonfinals);
+
+void
 compute_final_states(twa_graph_ptr A, set<unsigned>& finals);
+
+void
+compute_accepting_states(twa_graph_ptr A, set<unsigned>& acc);
 
 unsigned
 get_size_formula_ap(formula& f);

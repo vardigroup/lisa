@@ -20,6 +20,8 @@ Yong Li
 #include <spot/tl/parse.hh>
 #include <spot/tl/print.hh>
 
+#include "ltlf2fol.hh"
+
 using namespace spot;
 using namespace std;
 

@@ -305,10 +305,13 @@ read_from_mona_file(const char * file_name, bdd_dict_ptr dict)
 
 /*-------------------------------------------------------------------*/
 // execute mona to construct DFA for the input ltlf formula
+// NOT depend on ltlf2fol of Syft anymore
 /*-------------------------------------------------------------------*/
 twa_graph_ptr
 translate_ltlf_mona(formula f, bdd_dict_ptr dict)
 {
+    // code depending on ltlf2fol of Syft
+    /*
     string fol_file_name = "./fol.ltlf";
     ofstream ofs (fol_file_name, ofstream::out);
     // output in a parsable formula
@@ -319,9 +322,20 @@ translate_ltlf_mona(formula f, bdd_dict_ptr dict)
     string mona_file_name = "./ltlf.mona";
     string command = "./ltlf2fol NNF " + fol_file_name + " > " + mona_file_name;
     system(command.c_str());
+    */
+    string mona_file_name = "./ltlf.mona";
+    ofstream ofs(mona_file_name, ofstream::out);
+    ofs << "#LTLf formula" << endl;
+    ofs << "#" << str_psl(f, true) << endl;
+    formula bnf = get_bnf(f);
+    ofs << "# Backus normal form" << endl;
+    ofs << "#" << str_psl(bnf, true) << endl;
+    // the BNF form, and then convert it to fol formula
+    trans_ltlf2fol(ofs, bnf);
+    ofs.close();
     string dfa_file_name = "./mona.dfa";
-    command = "mona -u -xw " + mona_file_name+ " >" + dfa_file_name;
-    system(command.c_str());
+    string command = "mona -u -xw " + mona_file_name+ " >" + dfa_file_name;
+    int r = system(command.c_str());
     // if this turns to be a bottleneck, we need pthread to read from pipe
     return read_from_mona_file(dfa_file_name.c_str(), dict);
 }

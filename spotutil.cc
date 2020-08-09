@@ -69,7 +69,7 @@ get_size_formula(formula& f)
     // use id as the key to record the length and the number of props in a formula
     //std::cout << "operator" << f.id() << std::endl;
     unsigned count = 0;
-    if(f.kind() == op::Not || f.kind() == op::X || f.kind() == op::F || f.kind() == op::G )
+    if(f.kind() == op::Not || f.kind() == op::X || f.kind() == op::strong_X || f.kind() == op::F || f.kind() == op::G )
     {
         formula f1 = f[0];
         count += 1 + get_size_formula(f1);
@@ -96,7 +96,7 @@ get_size_formula(formula& f)
 void
 get_formula_aps(formula& f, set<formula>& aps)
 {
-    if(f.kind() == op::Not || f.kind() == op::X || f.kind() == op::F || f.kind() == op::G )
+    if(f.kind() == op::Not || f.kind() == op::X || f.kind() == op::strong_X || f.kind() == op::F || f.kind() == op::G )
     {
         formula f1 = f[0];
         return get_formula_aps(f1, aps);
@@ -114,9 +114,13 @@ get_formula_aps(formula& f, set<formula>& aps)
             get_formula_aps(child, aps);
         }
     }else 
-    if(f.kind() != op::tt && f.kind() != op::ff)
+    if(f.kind() == op::ap)
     {
         aps.insert(f);
+    }else if(f.kind() != op::tt && f.kind() != op::ff)
+    {
+        cerr << "Error formula in get_formula_aps(): " << f << endl;
+        exit(-1);
     }
 }
 
@@ -201,6 +205,25 @@ get_final_states(twa_graph_ptr aut, set<unsigned>& finals)
 }
 
 void
+get_nonfinal_states(twa_graph_ptr A, set<unsigned>& nonfinals)
+{
+    for(unsigned s = 0; s < A->num_states(); s ++)
+	{
+		for (auto& e: A->out(s))
+		{
+			if(! e.acc.has(0))
+			{
+				nonfinals.insert(s);
+			}
+		}
+	}
+}
+
+/*-------------------------------------------------------------------*/
+// obtain the set of final states of a DFA 
+// (has transition to accepting state of weak DBA on !alive )
+/*-------------------------------------------------------------------*/
+void
 compute_final_states(twa_graph_ptr A, set<unsigned>& finals)
 {
 	bdd p2 = bdd_ithvar(A->register_ap(ALIVE_AP));
@@ -211,6 +234,24 @@ compute_final_states(twa_graph_ptr A, set<unsigned>& finals)
 			if((e.cond & !p2) != bddfalse && s != e.dst)
 			{
 				finals.insert(s);
+			}
+		}
+	}
+}
+
+/*-------------------------------------------------------------------*/
+// obtain the set of accepting states of a weak DBA
+/*-------------------------------------------------------------------*/
+void
+compute_accepting_states(twa_graph_ptr A, set<unsigned>& acc)
+{
+    for(unsigned s = 0; s < A->num_states(); s ++)
+	{
+		for (auto& e: A->out(s))
+		{
+			if(e.acc.has(0))
+			{
+				acc.insert(s);
 			}
 		}
 	}

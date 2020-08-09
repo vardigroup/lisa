@@ -14,16 +14,14 @@ Lisa requires a C++14-compliant compiler.  G++ 5.x or later should work.
 Third-party dependencies
 -----------------------------------
 
-* [Spot model checker](https://spot.lrde.epita.fr/)
-
-* [Syft LTLf synthesizer](https://github.com/liyong31/Syft)
+* [Spot model checker version>=2.9](https://spot.lrde.epita.fr/)
 
 * [MONA](https://github.com/liyong31/MONA)
 
 * [CUDD library](https://github.com/KavrakiLab/cudd.git)
 
 Lisa relies on Spot and MONA to construct a DFA from a small LTLf formula.
-When constructing a DFA from an LTLf formula with MONA, Lisa requires Syft to translate an LTLf formula to a formula in first order logic, which is then fed into MONA.
+When constructing a DFA from an LTLf formula with MONA, Lisa translates an LTLf formula to a formula in first order logic, which is then fed into MONA.
 
 Complilation steps
 =======
@@ -44,7 +42,7 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
 
 2. Install CUDD
 
-    Syft needs CUDD to perform BDD operations and Lisa employs CUDD for symbolic DFA minimization.
+    Lisa employs CUDD for symbolic DFA minimization.
 
     * Uncompress cudd.zip or get CUDD from https://github.com/KavrakiLab/cudd.git.
 
@@ -79,36 +77,7 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
     Note that MONA has explicit state representation but encodes the labels on transition symbolically.
     For more details on the representation of DFA in MONA, we refer to https://www.brics.dk/mona/mona14.pdf.
     
-4. Compile Syft
-
-    Lisa needs the ltlf2fol tool in Syft to rewrite an LTLf formula as a formula in first order logic.
-    Please make sure that you have network connection during the installation of flex, bison and boost.
-
-    * Install flex and bison:
-
-            sudo apt-get install flex bison
-
-    * Install BOOST:
-        
-            sudo apt-get install libboost-dev
-
-    * Go to Syft directory and make build folder under Syft folder:
-
-            mkdir build && cd build
-
-    * Run CMake to generate the makefile:
-
-            cmake ..
-
-    * Compile using the generated makefile:
-
-            make
-   
-    Then you should be able to find two executables ltlf2fol and Syft inside the folder Syft/build/bin.
-
 6. Compile Lisa
-
-    * Copy the executable file ltlf2fol to lisa folder.
 
     * Compile Lisa with Make:
     
@@ -116,7 +85,7 @@ In the following we assume that we will compile Lisa on a Ubuntu system.
 
         or compile Lisa in command line:
 
-            g++ lisa.cc dfwavar.cc dfwa.cc spotutil.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc -o lisa -lspot -lbddx -lcudd  -O3
+            g++ lisa.cc dfwavar.cc dfwa.cc spotutil.cc ltlf2fol.cc mona.cc dfwamin.cc synt.cc strategy.cc dfwamin2.cc -o lisa -lspot -lbddx -lcudd  -O3
 
 Input format
 =======
@@ -217,5 +186,36 @@ For LTLf synthesis
 2. To let the environment move first in the DFA game for LTLf synthesis, type
 
         ./lisa -ltlf ./examples/ltlf3377.ltlf -part ./examples/ltlf3377.part -syn -env
+
+Syntax
+==
+
+The Linear Temporal Logic over finite traces (LTLf) has the same syntax as LTL.
+Given a set P of propositions, the syntax of LTLf formulas supported by Spot is as follows:
+```
+φ ::= 1 | 0 | p | !φ | φ1 && φ2 | φ1 || φ2 | φ1 -> φ2 
+      | φ1 <-> φ2 | X φ | X[!] φ | F φ | G φ | φ1 U φ2 | φ1 R φ2 | φ1 W φ2
+
+```
+where p ∈ P. Here 1 and 0 represent *true* and *false* respectively.
+X (weak Next), X[!] (strong Next), F (Finally), G (Globally), U (Until), R (Release) and W (weak Until) are temporal operators.
+We have that X[!] φ ≡ ! (X !φ), F φ = !(G !φ), φ1 U φ2 ≡ !(!φ1 R !φ2) and φ1 W φ2 ≡ G φ1 || (φ1 U φ2).
+As usuall, we also have that F φ ≡ 1 U φ and G φ ≡ 0 R φ.
+
+For the semantics of LTLf formula, we refer to [IJCAI13 paper](https://www.cs.rice.edu/~vardi/papers/ijcai13.pdf).
+Specially, Spot supports a weak next and a strong next.
+    
+Weak next: *X a* is true if *a* holds at next step or if there is no next step.
+In particular, *X(0)* is true iff there is no successor.
+    
+Strong next: *X[!] a* is true if *a* holds at next step and there must be a next step.
+In particular *X[!]1* is true iff there is a successor.
+
+## Acknowledgment
+- Alexandre Duret-Lutz : [Spot](https://spot.lrde.epita.fr/)
+- Jørn Lind-Nielsen: [BuDDy](http://vlsicad.eecs.umich.edu/BK/Slots/cache/www.itu.dk/research/buddy/)
+- Fabio Somenzi: [CUDD](https://github.com/ivmai/cudd)
+- Tom van Dijk: [Sylvan](https://github.com/trolando/sylvan)
+- Shufang Zhu: [Syft](https://github.com/saffiepig/Syft)
     
 
