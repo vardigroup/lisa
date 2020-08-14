@@ -330,7 +330,7 @@ translate_ltlf_mona(formula f, bdd_dict_ptr dict)
     ofs << "# Backus normal form" << endl;
     ofs << "#" << str_psl(bnf, true) << endl;
     // the BNF form, and then convert it to fol formula
-    trans_ltlf2fol(ofs, bnf);
+    ltlf_to_fol(ofs, bnf);
     ofs.close();
     string dfa_file_name = "./mona.dfa";
     string command = "mona -u -xw " + mona_file_name+ " >" + dfa_file_name;

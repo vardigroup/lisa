@@ -6,9 +6,10 @@
 
 /*-------------------------------------------------------------------*/
 // The code for this translation is adapted from Syft by Shufang Zhu
+// Translate an LTLf formula to a first order logic
 /*-------------------------------------------------------------------*/
 // The input formula should be a formula in normal form
-void trans_ltlf2fol(ostream &os, formula &f)
+void ltlf_to_fol(ostream &os, formula &f)
 {
   int c = 1;
   set<formula> aps;
@@ -223,8 +224,250 @@ string translate2fol(formula &f, int t, int &c)
   return res;
 }
 
-void 
-trans_prefixltlf2fol(ostream &os, formula &f)
+/*-------------------------------------------------------------------*/
+// The code for this translation is adapted from Syft by Shufang Zhu
+// Translate an LTLf formula to a past first order logic
+/*-------------------------------------------------------------------*/
+// The input formula should be a formula in normal form
+void ltlf_to_pfol(ostream &os, formula &f)
+{
+  int c = 1;
+  set<formula> aps;
+  get_formula_aps(f, aps);
+  // output the atomic propositions
+  if (!aps.empty())
+  {
+    os << "m2l-str;" << endl;
+    os << "var2 ";
+    int count = 0;
+    for (formula ap : aps)
+    {
+      //cout << "ap: " << ap << endl;
+      if (count == 0)
+      {
+        os << ap.ap_name();
+      }
+      else
+      {
+        os << ", " << ap.ap_name();
+      }
+      count++;
+    }
+    os << ";" << endl;
+  }
+  // translate ltlf formulas to FOL formulas
+  string res = translate2pfol(f, "max $", c);
+  os << res << ";" << endl;
+}
+// obtain a formula in backus normal form
+inline formula
+negate_formula(formula &r)
+{
+  if (r.kind() == op::Not)
+  {
+    return r[0];
+  }
+  else
+  {
+    return formula::unop(op::Not, r);
+  }
+}
+/*-------------------------------------------------------------------*/
+// translate ltlf formula to a past first order logic accepting reverse language
+// make sure input is in backus/negation normal form
+// @f the input formula interpreted as a past LTLf formula
+// @t current position t
+// @c unknown parameter for the code from Syft; it seems to be unused
+/*-------------------------------------------------------------------*/
+string translate2pfol(formula &f, string t, int &c)
+{
+  string curs, ts;
+  string exs, alls;
+  string res;
+  int cur;
+  int count;
+  int intt;
+  formula r, lft, rgt;
+
+  // last position
+  if (t == "max $")
+  {
+    ts = t;
+    // then current index is 0
+    intt = 0;
+  }
+  else
+  {
+    ts = "x" + t;
+    // to integer number
+    intt = stoi(t);
+  }
+  if (intt == 0)
+  {
+    ts = "max $";
+  }
+
+  // ts is current position = x
+
+  switch (f.kind())
+  {
+  // Not operation
+  // (¬folp(φ, x))
+  case op::Not:
+    res = "~(";
+    r = f[0];
+    res += translate2pfol(r, t, c);
+    res += ")";
+    break;
+  // strong Next
+  case op::strong_X:
+    // X[!](0) = 0
+    // X[!] (1) means that there must be a successor
+    // Note: with finite semantics X[!](1)≠1.
+    // next step is y = x(t+1)
+    // X[!] φ => x: . φ ....
+    // Y φ => .... φ .: x
+    exs = "x" + to_string(intt + 1); // y ts = current position
+    r = f[0];
+    // current step t
+    // ((∃exs)((exs = ts - 1) ∧ (exs >= 0) ∧ folp(φ, exs)))
+    res = "(ex1 " + exs + ": ((" + exs + "=" + ts + "-1) & (" + ts + " > 0) & (";
+    res += translate2pfol(r, to_string(intt + 1), c);
+    res += ")))";
+    break;
+  // weak Next
+  case op::X:
+    //// X(1) = 1
+    // X (0) means that there is no successor
+    // We do not have X(0)=0 because that
+    // is not true with finite semantics.
+    // next step y = x(t+1)
+    // current step t
+    //((ts = 0) ∨ ((∃exs)((exs = ts - 1) ∧ (exs >= 0) ∧ folp(φ, exs))))
+    r = f[0];
+    exs = "x" + to_string(intt + 1);
+    res = "((ex1 " + exs + ": (" + exs + "=" + ts + "-1 & (" + ts + " > 0) & (";
+    res += translate2pfol(r, to_string(intt + 1), c);
+    res += "))) | (" + ts + " = 0))";
+    break;
+  case op::F:
+    // F φ => x: .... φ ....
+    // P φ => .... φ ....: x
+    // (∃y)((0 <= y <= x ) ∧ folp(φ, y)
+    r = f[0];
+    exs = "x" + to_string(intt + 1);
+    res = "(ex1 " + exs + ": (" + exs + " <= " + ts + " & 0 <= " + exs + " & (";
+    res += translate2pfol(r, to_string(intt + 1), c);
+    res += ")))";
+    break;
+  //TODO
+  case op::G:
+    // G φ => x: φ...φ
+    // G φ => φ...φ: x
+    // G φ = ! (F !φ)
+    r = f[0];
+    // negate formula
+    lft = negate_formula(r);
+    rgt = formula::unop(op::F, lft);
+    rgt = negate_formula(rgt);
+    res = translate2pfol(rgt, t, c);
+    break;
+  // U corresponds to S
+  case op::U:
+    lft = f[0];
+    rgt = f[1];
+    // folp (ψ1 S ψ2 , x) = ((∃y)((0 ≤ y ≤ x) ∧ folp (ψ2 , y) ∧ (∀z)((y < z ≤ x) → folp (ψ1 , z))))
+    // ψ2 holds before x and after that ψ1 holds until current position
+    // ψ1 U ψ2 => x: ψ1 ψ1 ψ1 ... ψ1 ψ2 ....
+    // ψ1 S ψ2 => .... ψ2 ψ1 .... ψ1 ψ1 ψ1: x
+    exs = "x" + to_string(intt + 1);  // y
+    alls = "x" + to_string(intt + 2); // z
+    // (0 ≤ y ≤ x) ∧ folp (ψ2 , y)  ts = x current position
+    res = "(ex1 " + exs + ": (" + exs + " <= " + ts + " & 0 <= " + exs + " & (";
+    res += translate2pfol(rgt, to_string(intt + 1), c);
+    // (y < z ≤ x) → folp (ψ1 , z)
+    res += ") & (all1 " + alls + ": (" + alls + " <= " + ts + " & " + exs;
+    res += " < " + alls + " => (";
+    res += translate2pfol(lft, to_string(intt + 2), c);
+    res += ")))))";
+    break;
+  //TODO a R b = !(!a U !b)
+  case op::R: //New
+    lft = f[0];
+    rgt = f[1];
+    lft = negate_formula(lft); // ! a
+    rgt = negate_formula(rgt); // ! b
+    rgt = formula::U(lft, rgt); // !a U !b
+    rgt = negate_formula(rgt);  // !(!a U !b)
+    res = translate2pfol(rgt, t, c);
+    break;
+  case op::Or:
+    // list of Or operands
+    //(fol(φ 1 , x) ∨ fol(φ 2 , x))
+    count = 0;
+    // size must larger than 2
+    res += "(";
+    for (formula child : f)
+    {
+      if (count == 0)
+      {
+        res += "(" + translate2pfol(child, to_string(intt), c) + ")";
+      }
+      else
+      {
+        res += " | (" + translate2pfol(child, to_string(intt), c) + ")";
+      }
+      count++;
+      //cout << "subformula: " << child << endl;
+    }
+    res += ")";
+    break;
+  case op::And:
+    // list of And operands
+    // (fol(φ 1 , x) ∧ fol(φ 2 , x))
+    count = 0;
+    // size must larger than 2
+    res += "(";
+    for (formula child : f)
+    {
+      if (count == 0)
+      {
+        res += "(" + translate2pfol(child, to_string(intt), c) + ")";
+      }
+      else
+      {
+        res += " & (" + translate2pfol(child, to_string(intt), c) + ")";
+      }
+      count++;
+      //cout << "subformula: " << child << endl;
+    }
+    res += ")";
+    break;
+  case op::tt:
+    res += "(true)";
+    break;
+  case op::ff:
+    res += "(false)";
+    break;
+  // atomic propositions
+  case op::ap:
+    res = "(";
+    //ts = get_step_str(t);
+    res += ts + " in ";
+    //const std::string& str = f.ap_name();
+    res += "" + f.ap_name();
+    res += ")";
+    break;
+  default:
+    cerr << "Formula: " << f << ". ";
+    throw runtime_error("Error formula in translate2pfol()");
+    exit(-1);
+  }
+  // cout<<res<<endl;
+  return res;
+}
+
+void trans_prefixltlf2fol(ostream &os, formula &f)
 {
   int c = 1;
   set<formula> aps;
@@ -252,7 +495,8 @@ trans_prefixltlf2fol(ostream &os, formula &f)
   }
   // translate ltlf formulas to FOL formulas
   string res = get_prefix2fol(f, 0, c);
-  os << "(ex1 yend: (yend <= max $ & (ex1 yy: (yend <= yy & yy<= max $) => (~(false))) & (" << res << ")))" << ";" << endl;
+  os << "(ex1 yend: (yend <= max $ & (ex1 yy: (yend <= yy & yy<= max $) => (~(false))) & (" << res << ")))"
+     << ";" << endl;
 }
 
 /*-------------------------------------------------------------------*/
@@ -264,7 +508,7 @@ trans_prefixltlf2fol(ostream &os, formula &f)
 // @c unknown parameter for the code from Syft; it seems to be unused
 /*-------------------------------------------------------------------*/
 string
-get_prefix2fol(formula& f, int t, int& c)
+get_prefix2fol(formula &f, int t, int &c)
 {
   string curs, ts;
   string exs, alls;
@@ -292,7 +536,7 @@ get_prefix2fol(formula& f, int t, int& c)
     // current step t
     ts = get_step_str(t);
     // ((∃y)((y = x + 1) ∧ (y <= yend) ∧fol(φ, y)))
-    res = "(ex1 " + exs + ": (" + exs + "=" + ts + "+1 & " + exs + " <= yend" +" & (";
+    res = "(ex1 " + exs + ": (" + exs + "=" + ts + "+1 & " + exs + " <= yend" + " & (";
     r = f[0];
     res += get_prefix2fol(r, t + 1, c);
     res += ")))";
@@ -436,11 +680,11 @@ push_not_in(formula &f)
   {
     res = formula::unop(op::Not, f);
   }
-  else if(f.is_ff())
+  else if (f.is_ff())
   {
     res = f.tt();
   }
-  else if(f.is_tt())
+  else if (f.is_tt())
   {
     res = f.ff();
   }
@@ -650,20 +894,6 @@ get_nnf(formula &f)
     }
   }
   return res;
-}
-
-// obtain a formula in backus normal form
-inline formula
-negate_formula(formula& r)
-{
-  if (r.kind() == op::Not)
-  {
-    return r[0];
-  }
-  else
-  {
-    return formula::unop(op::Not, r);
-  }
 }
 
 // get a formula in Boolean normal form (BNF)
