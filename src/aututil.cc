@@ -224,3 +224,28 @@ reverse(spot::bdd_dict_ptr dict, twa_graph_ptr aut)
     return ret;
 }
 
+// reduce a nondeterministic automaton
+twa_graph_ptr
+reduce(twa_graph_ptr aut, int level)
+{
+    clock_t post_start = clock();
+    spot::postprocessor post;
+    post.set_type(spot::postprocessor::BA);
+    //post.set_pref(spot::postprocessor::Deterministic);
+    if(level == 0)
+    {
+        post.set_level(spot::postprocessor::Low);
+    }else if(level == 1)
+    {
+        post.set_level(spot::postprocessor::Medium);
+    }else 
+    {
+        post.set_level(spot::postprocessor::High);
+    }
+    twa_graph_ptr ret = post.run(aut);
+    clock_t post_end = clock();
+    cout << "Total CPU time used for reducing FA: "
+         << 1000.0 * (post_end - post_start) / CLOCKS_PER_SEC << " ms\n";
+    return ret;
+}
+
