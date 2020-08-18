@@ -1,0 +1,29 @@
+(a U b) & (F c)
+XX!(1 U !((X[!] p1 U (!p2 U (!p0 & !p2))) | X!(1 U !p0)))
+X[!] X(1 U (p1 U ((p0 & p1) | !(1 U !p1))))
+G(a | Fb) | (FGb R !b)
+G(a | Fb) | (FGb R (X[!] b))
+G(a & Fb) & (FGb R (X[!] b))
+X[!] (p2 & X (p2 U (!p0 | !(1 U !p2))))
+F!(!p1 <-> FGp1)
+F(p0 R !p1)
+G(p0 | Fp2) W (FGp2 R !p2)
+(p2 R G!p1) | G(p2 U !p0)
+(p2 W p0) U p2
+F!G(!Gp1 W p2)
+((G ((cancel) -> (X (go)))) -> (G ((((req) -> (X ((grant) || (X ((grant) || (X (grant))))))) && ((grant) -> (X (! (grant))))) && ((cancel) -> (X ((! (grant)) U (go)))))))
+((G ((cancel) -> (X[!] (go)))) -> (G ((((req) -> (X[!] ((grant) || (X[!] ((grant) || (X[!] (grant))))))) && ((grant) -> (X[!] (! (grant))))) && ((cancel) -> (X[!] ((! (grant)) U (go)))))))
+(G (false  | (!(X[!](p12))) | (p5)))  & (G (false  | (!(X[!](p13))) | (p6)))  & (G (false  | (!(X[!](p14))) | (p7)))  & (G (false  | (!(X[!](p15))) | (p8)))
+G a
+F !a
+X a
+X[!] a
+F a
+a U b
+(F i2) & (F i1) & (F i1) & (F o2)
+(F i3) & (F i2) & (F i1) & (F i1) & (F o2) & (F o3)
+(F i4) & (F i3) & (F i2) & (F i1) & (F i1) & (F o2) & (F o3) & (F o4)
+(F i5) & (F i4) & (F i3) & (F i2) & (F i1) & (F i1) & (F o2) & (F o3) & (F o4) & (F o5)
+(G (r1 -> X[!] g1)) & (G( r2 -> X[!] g2)) & G(!g1 & !g2)
+(G (r1 -> X[!] g1)) & (G( r2 -> X[!] g2)) & (G( r3 -> X[!] g3)) & G(!g1 & !g2 & !g3)
+(G (r1 -> X[!] g1)) & (G( r2 -> X[!] g2)) & (G( r3 -> X[!] g3)) & (G( r4 -> X[!] g4)) & G(!g1 & !g2 & !g3 & !g4)
