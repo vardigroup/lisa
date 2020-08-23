@@ -35,9 +35,11 @@ const char* SEMANTICS = "semantics";
 // unobservable inputs 
 const char* UNOBSERS = "unobservable";
 // 
-const char* WINNING = "winning";
+//const char* WINNING = "winning";
 //
 const char* DOMINANT = "dominant";
+
+const char* MEALY = "mealy";
 
 
 enum class strategy_type { WINNING, DOMINANT };
@@ -46,12 +48,13 @@ enum class strategy_semantics { MOORE, MEALY };
 struct spec
 {
     string descr;
+    
     vector<formula> assumptions;
     vector<formula> guarantees;
+
     vector<string> input_aps;
     vector<string> output_aps;
     vector<string> unobservable_aps;
-
 
     strategy_type start_type;
     strategy_semantics start_semantics;

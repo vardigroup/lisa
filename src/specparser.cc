@@ -1,9 +1,6 @@
 /*-------------------------------------------------------------------*/
 // Yong Li (liyong@ios.ac.cn)
 /*-------------------------------------------------------------------*/
-#include <spot/tl/formula.hh>
-#include <spot/tl/print.hh>
-#include <spot/tl/parse.hh>
 
 #include "specparser.hh"
 
@@ -64,6 +61,16 @@ parse_spec(const char* file_name)
         p->start_type = strategy_type::WINNING;
         cout << "Winning" << endl;
     }
+
+    if(j[SEMANTICS] == MEALY)
+    {
+        p->start_semantics = strategy_semantics::MEALY;
+    }else
+    {
+        p->start_semantics = strategy_semantics::MOORE;
+        cout << "Moore" << endl;
+    }
+    
     return p;
 }
 
