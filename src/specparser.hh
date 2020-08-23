@@ -9,6 +9,8 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <iomanip>      // std::setw
+
 #include <spot/tl/formula.hh>
 #include <spot/tl/print.hh>
 #include <spot/tl/parse.hh>
@@ -48,16 +50,19 @@ enum class strategy_semantics { MOORE, MEALY };
 struct spec
 {
     string descr;
-    
-    vector<formula> assumptions;
-    vector<formula> guarantees;
+
+    strategy_type start_type;
+    strategy_semantics start_semantics;
 
     vector<string> input_aps;
     vector<string> output_aps;
     vector<string> unobservable_aps;
 
-    strategy_type start_type;
-    strategy_semantics start_semantics;
+    vector<formula> assumptions;
+    vector<formula> guarantees;
+
+
+    friend std::ostream& operator<<(std::ostream& os, const spec& obj);
 
 };
 
