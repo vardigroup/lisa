@@ -211,6 +211,11 @@ In particular, *X(0)* is true iff there is no successor.
 Strong next: *X[!] a* is true if *a* holds at next step and there must be a next step.
 In particular *X[!]1* is true iff there is a successor.
 
+**Note**
+Other tools like [Syft](https://github.com/saffiepig/Syft) may interpret *X* as a strong next operator and use *N* to denote weak next operator.
+Moreover, the minimal DFAs constructed by lisa may have one less state than those by MONA due to the fact that lisa removes nonaccepting sink state while MONA keeps it.
+
+Please be noted the differences above.
 
 ## Acknowledgment
 - Alexandre Duret-Lutz : [Spot](https://spot.lrde.epita.fr/)
