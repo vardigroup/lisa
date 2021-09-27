@@ -5,6 +5,7 @@ Lisa is an (a) LTLf to DFA conversion tool, and (b) an LTLf synthesis tool.
 
 It is publicly available under the license GNU GPL v3.
 
+To read more about Lisa, read our [AAAI 2020](https://suguman.github.io/Papers/AAAI20.pdf) paper. 
 
 Requirements
 -----------------------------------
